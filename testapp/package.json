@@ -20,5 +20,9 @@
     "platforms": [
       "ios"
     ]
+  },
+  "scripts": {
+    "install": "cordova prepare && cordova compile",
+    "ios": "cordova emulate ios"
   }
 }

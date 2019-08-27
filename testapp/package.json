@@ -1,0 +1,9 @@
+{
+  "name": "testapp.cordova.plugin.global121.indy",
+  "displayName": "TestApp",
+  "version": "0.1.0",
+  "description": "Test app for cordova-plugin-global-121-indy",
+  "main": "index.js",
+  "author": "Global 121",
+  "license": "MIT"
+}

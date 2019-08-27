@@ -2,6 +2,11 @@
   "name": "cordova-plugin-global-121-indy",
   "version": "0.1.0",
   "description": "Cordova plugin for accessing Hyperledger Indy",
+  "files": [
+    "plugin.xml",
+    "src",
+    "www"
+  ],
   "cordova": {
     "id": "cordova-plugin-global-121-indy",
     "platforms": ["ios"]

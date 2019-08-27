@@ -9,7 +9,9 @@
   ],
   "cordova": {
     "id": "cordova-plugin-global-121-indy",
-    "platforms": ["ios"]
+    "platforms": [
+      "ios"
+    ]
   },
   "repository": {
     "type": "git",

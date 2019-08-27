@@ -11,11 +11,13 @@
     "cordova-plugin-whitelist": "^1.3.4"
   },
   "dependencies": {
-    "cordova-ios": "^5.0.1"
+    "cordova-ios": "^5.0.1",
+    "cordova-plugin-global-121-indy": "file:.."
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-global-121-indy": {}
     },
     "platforms": [
       "ios"

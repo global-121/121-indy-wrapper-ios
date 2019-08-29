@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugin id="cordova-plugin-global-121-indy" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
   <name>Global-121-Indy</name>
-  <js-module name="Global-121-Indy" src="www/Global-121-Indy.js">
+  <js-module name="Global 121 Indy" src="www/index.js">
     <clobbers target="cordova.plugins.Global-121-Indy" />
   </js-module>
 </plugin>

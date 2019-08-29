@@ -1,3 +1,5 @@
 exports.defineAutoTests = function () {
-  require('./example-test.js')
+  it('fails', () => {
+    expect(1).toBe(2)
+  })
 }

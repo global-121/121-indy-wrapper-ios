@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugin id="cordova-plugin-global-121-indy-tests" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
+  <name>Global 121 Indy Tests</name>
+  <js-module name="tests" src="index.js"></js-module>
+</plugin>

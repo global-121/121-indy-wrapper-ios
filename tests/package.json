@@ -1,0 +1,11 @@
+{
+  "name": "cordova-plugin-global-121-indy-tests",
+  "version": "0.1.0",
+  "description": "",
+  "cordova": {
+    "id": "cordova-plugin-global-121-indy-tests",
+    "platforms": []
+  },
+  "author": "Global 121",
+  "license": "MIT"
+}

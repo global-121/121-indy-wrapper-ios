@@ -1,5 +1,8 @@
 import Indy
 
+// Uncomment the following line when editing this using Xcode
+//import Cordova
+
 @objc(Global121Indy) class Global121Indy: CDVPlugin {
   @objc(createWallet:)
   func createWallet(command: CDVInvokedUrlCommand) {

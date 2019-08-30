@@ -1,0 +1,16 @@
+PODS:
+  - Cordova (4.5.4)
+
+DEPENDENCIES:
+  - Cordova (~> 4.5)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Cordova
+
+SPEC CHECKSUMS:
+  Cordova: 90a337977b8667a80483f559268c82062b1183da
+
+PODFILE CHECKSUM: c8d587ec7ae93467e87ce60048210099408e716a
+
+COCOAPODS: 1.7.5

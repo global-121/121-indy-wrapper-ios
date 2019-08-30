@@ -4,4 +4,13 @@
   <js-module name="Global 121 Indy" src="www/index.js">
     <clobbers target="Global121.Indy" />
   </js-module>
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="Global121Indy">
+        <param name="ios-package" value="Global121Indy" />
+      </feature>
+    </config-file>
+    <dependency id="cordova-plugin-add-swift-support" version="2.0.2" />
+    <source-file src="src/ios/Global121Indy.swift" />
+  </platform>
 </plugin>

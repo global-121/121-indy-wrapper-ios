@@ -1,5 +1,5 @@
 exports.defineAutoTests = function () {
-  it('has the plugin', () => {
-    expect(Global121.Indy).toBeDefined()
+  it('has a createWallet function', () => {
+    expect(Global121.Indy.createWallet).toBeDefined()
   })
 }

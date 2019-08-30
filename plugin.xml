@@ -2,6 +2,6 @@
 <plugin id="cordova-plugin-global-121-indy" version="0.1.0" xmlns="http://apache.org/cordova/ns/plugins/1.0">
   <name>Global-121-Indy</name>
   <js-module name="Global 121 Indy" src="www/index.js">
-    <clobbers target="cordova.plugins.Global-121-Indy" />
+    <clobbers target="Global121.Indy" />
   </js-module>
 </plugin>

@@ -1,5 +1,5 @@
 exports.defineAutoTests = function () {
-  it('fails', () => {
-    expect(1).toBe(2)
+  it('has the plugin', () => {
+    expect(Global121.Indy).toBeDefined()
   })
 }

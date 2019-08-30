@@ -1,11 +1,7 @@
 exports.defineAutoTests = function () {
-  it('has a createWallet function', () => {
-    expect(Global121.Indy.createWallet).toBeDefined()
-  })
-
-  it('errors when calling createWallet', done => {
+  it('returns error code from Indy framework', done => {
     Global121.Indy.createWallet(null, null, msg => {
-      expect(msg).toBe('not implemented yet')
+      expect(msg).toBe('Error code: 101')
       done()
     })
   })

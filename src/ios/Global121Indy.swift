@@ -42,33 +42,22 @@ import Indy
         return _credentialsJSON
     }
 
-    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
-        let createWallet = {
-            IndyWallet.sharedInstance()?.createWallet(
-                withConfig: self.walletConfigJSON,
-                credentials: self.credentialsJSON) { error in
-                    if let error = error as NSError?,
-                        error.code != IndyErrorCode.Success.rawValue,
-                        error.code != IndyErrorCode.WalletAlreadyExistsError.rawValue {
-                        self.commandDelegate!.send(result(error: error),
-                                                   callbackId: command.callbackId)
-                        return
-                    }
-                    print("wallet available")
-                    self.openTheWallet { _, error in
-                        if let e = error as NSError? {
-                            self.send(error: e, for: command)
-                            return
-                        }
-                        print("wallet open")
-                        self.commandDelegate!.send(
-                            CDVPluginResult(status: CDVCommandStatus_OK,
-                                            messageAs: "wallet open"),
-                            callbackId: command.callbackId)
-                    }
-            }
+    func createWallet(completion: @escaping (Error?)->Void) {
+        IndyWallet.sharedInstance()?.createWallet(
+            withConfig: self.walletConfigJSON,
+            credentials: self.credentialsJSON) { error in
+                if let error = error as NSError?,
+                    error.code != IndyErrorCode.Success.rawValue,
+                    error.code != IndyErrorCode.WalletAlreadyExistsError.rawValue {
+                    completion(error)
+                }
+                else {
+                    completion(nil)
+                }
         }
+    }
 
+    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
         let createPool = {
             let poolName = "pool"
             IndyPool.createPoolLedgerConfig(
@@ -94,7 +83,27 @@ import Indy
                         }
 
                         print("pool open")
-                        createWallet()
+                        self.createWallet { error in
+                            if let error = error as NSError? {
+                                self.send(error: error, for: command)
+                                return
+                            }
+
+                            print("wallet available")
+                            self.openTheWallet { _, error in
+                                if let e = error as NSError? {
+                                    self.send(error: e, for: command)
+                                    return
+                                }
+
+                                print("wallet open")
+                                self.commandDelegate!.send(
+                                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                                    messageAs: "wallet open"),
+                                    callbackId: command.callbackId)
+                            }
+                        }
+
                     }
             }
         }

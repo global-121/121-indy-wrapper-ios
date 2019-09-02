@@ -4,41 +4,49 @@ import Indy
 //import Cordova
 
 @objc class Global121Indy: CDVPlugin {
-    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
-        let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let walletsDir = documentsDir.appendingPathComponent("global-121-wallets", isDirectory: true)
-        if !FileManager.default.fileExists(atPath: walletsDir.path) {
-            try! FileManager.default.createDirectory(at: walletsDir, withIntermediateDirectories: false)
+    var _poolConfigJSON: String?
+    var poolConfigJSON: String? {
+        if _poolConfigJSON == nil {
+            let poolConfigPath = Bundle.main.path(
+                forResource: "sovrin_pool_transactions_sandbox_genesis",
+                ofType: "txt")!
+            let config = ["genesis_txn": poolConfigPath]
+            let configJSONdata = try! JSONSerialization.data(withJSONObject: config)
+            _poolConfigJSON = String(data: configJSONdata, encoding: .utf8)
         }
-        let config = ["id": "wallet", "storage_config": ["path": walletsDir.path]] as [String : Any]
-        let configJSONdata = try! JSONSerialization.data(withJSONObject: config)
-        let configJSON = String(data: configJSONdata, encoding: .utf8)
+        return _poolConfigJSON
+    }
 
-        let credentials = ["key": "welcome123"]
-        let credentialsJSONdata = try! JSONSerialization.data(withJSONObject: credentials)
-        let credentialsJSON = String(data: credentialsJSONdata, encoding: .utf8)
-
-        let openWallet = {
-            IndyWallet.sharedInstance()?.open(
-                withConfig: configJSON,
-                credentials: credentialsJSON) { error, walletHandle in
-                    if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
-                        self.commandDelegate!.send(result(error: error),
-                                                   callbackId: command.callbackId)
-                        return
-                    }
-                    print("wallet open")
-                    self.commandDelegate!.send(
-                        CDVPluginResult(status: CDVCommandStatus_OK,
-                                        messageAs: "wallet open"),
-                        callbackId: command.callbackId)
+    var _walletConfigJSON: String?
+    var walletConfigJSON: String? {
+        if _walletConfigJSON == nil {
+            let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            let walletsDir = documentsDir.appendingPathComponent("global-121-wallets", isDirectory: true)
+            if !FileManager.default.fileExists(atPath: walletsDir.path) {
+                try! FileManager.default.createDirectory(at: walletsDir, withIntermediateDirectories: false)
             }
+            let config = ["id": "wallet", "storage_config": ["path": walletsDir.path]] as [String : Any]
+            let configJSONdata = try! JSONSerialization.data(withJSONObject: config)
+            _walletConfigJSON = String(data: configJSONdata, encoding: .utf8)
         }
+        return _walletConfigJSON
+    }
 
+    var _credentialsJSON: String?
+    var credentialsJSON: String? {
+        if _credentialsJSON == nil {
+            let credentials = ["key": "welcome123"]
+            let credentialsJSONdata = try! JSONSerialization.data(withJSONObject: credentials)
+            _credentialsJSON = String(data: credentialsJSONdata, encoding: .utf8)
+        }
+        return _credentialsJSON
+    }
+
+    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
         let createWallet = {
             IndyWallet.sharedInstance()?.createWallet(
-                withConfig: configJSON,
-                credentials: credentialsJSON) { error in
+                withConfig: self.walletConfigJSON,
+                credentials: self.credentialsJSON) { error in
                     if let error = error as NSError?,
                         error.code != IndyErrorCode.Success.rawValue,
                         error.code != IndyErrorCode.WalletAlreadyExistsError.rawValue {
@@ -47,22 +55,25 @@ import Indy
                         return
                     }
                     print("wallet available")
-                    openWallet()
+                    self.openTheWallet { _, error in
+                        if let e = error as NSError? {
+                            self.send(error: e, for: command)
+                            return
+                        }
+                        print("wallet open")
+                        self.commandDelegate!.send(
+                            CDVPluginResult(status: CDVCommandStatus_OK,
+                                            messageAs: "wallet open"),
+                            callbackId: command.callbackId)
+                    }
             }
         }
 
         let createPool = {
-            let poolConfigPath = Bundle.main.path(
-                forResource: "sovrin_pool_transactions_sandbox_genesis",
-                ofType: "txt")!
-            let config = ["genesis_txn": poolConfigPath]
-            let configJSONdata = try! JSONSerialization.data(withJSONObject: config)
-            let configJSON = String(data: configJSONdata, encoding: .utf8)
-
             let poolName = "pool"
             IndyPool.createPoolLedgerConfig(
                 withPoolName: poolName,
-                poolConfig: configJSON) { error in
+                poolConfig: self.poolConfigJSON) { error in
 
                     if let error = error as NSError? {
                         if error.code != IndyErrorCode.Success.rawValue
@@ -75,7 +86,7 @@ import Indy
 
                     print("pool available")
 
-                    IndyPool.openLedger(withName: poolName, poolConfig: configJSON) { error, poolHandle in
+                    IndyPool.openLedger(withName: poolName, poolConfig: self.poolConfigJSON) { error, poolHandle in
                         if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                             self.commandDelegate!.send(result(error: error),
                                                        callbackId: command.callbackId)
@@ -96,6 +107,24 @@ import Indy
             else {
                 createPool()
             }
+        }
+    }
+
+    func send(error: NSError, for command: CDVInvokedUrlCommand) {
+        self.commandDelegate!.send(result(error: error),
+                                   callbackId: command.callbackId)
+
+    }
+
+    func openTheWallet(completion: @escaping (IndyHandle?, Error?)->Void) {
+        IndyWallet.sharedInstance()?.open(
+            withConfig: self.walletConfigJSON,
+            credentials: self.credentialsJSON) { error, walletHandle in
+                if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                    completion(nil, error)
+                    return
+                }
+                completion(walletHandle, nil)
         }
     }
 }

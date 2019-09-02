@@ -45,57 +45,6 @@ let poolName = "pool"
         return _credentialsJSON
     }
 
-    func createWallet(completion: @escaping (Error?)->Void) {
-        IndyWallet.sharedInstance()?.createWallet(
-            withConfig: self.walletConfigJSON,
-            credentials: self.credentialsJSON) { error in
-                if let error = error as NSError?,
-                    error.code != IndyErrorCode.Success.rawValue,
-                    error.code != IndyErrorCode.WalletAlreadyExistsError.rawValue {
-                    completion(error)
-                }
-                else {
-                    completion(nil)
-                }
-        }
-    }
-
-    func openLedger(completion: @escaping (IndyHandle?, Error?)->Void) {
-        IndyPool.openLedger(withName: poolName, poolConfig: self.poolConfigJSON) { error, poolHandle in
-            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
-                completion(nil, error)
-            }
-            else {
-                completion(poolHandle, nil)
-            }
-        }
-    }
-
-    func createPool(completion: @escaping (Error?)->Void) {
-        IndyPool.createPoolLedgerConfig(
-            withPoolName: poolName,
-            poolConfig: self.poolConfigJSON) { error in
-                if let error = error as NSError?,
-                    error.code != IndyErrorCode.Success.rawValue,
-                    error.code != IndyErrorCode.PoolLedgerConfigAlreadyExistsError.rawValue {
-                    completion(error)
-                }
-                else {
-                    completion(nil)
-                }
-        }
-    }
-
-    func setProtocolVersion(completion: @escaping (Error?)->Void) {
-        IndyPool.setProtocolVersion(2) { error in
-            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
-                completion(error)
-            }
-            else {
-                completion(nil)
-            }
-        }
-    }
 
     @objc func openWallet(_ command: CDVInvokedUrlCommand) {
         setProtocolVersion() { error in
@@ -143,13 +92,59 @@ let poolName = "pool"
         }
     }
 
-    func send(error: NSError, for command: CDVInvokedUrlCommand) {
-        self.commandDelegate!.send(result(error: error),
-                                   callbackId: command.callbackId)
-
+    private func setProtocolVersion(completion: @escaping (Error?)->Void) {
+        IndyPool.setProtocolVersion(2) { error in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                completion(error)
+            }
+            else {
+                completion(nil)
+            }
+        }
     }
 
-    func openTheWallet(completion: @escaping (IndyHandle?, Error?)->Void) {
+    private func createPool(completion: @escaping (Error?)->Void) {
+        IndyPool.createPoolLedgerConfig(
+            withPoolName: poolName,
+            poolConfig: self.poolConfigJSON) { error in
+                if let error = error as NSError?,
+                    error.code != IndyErrorCode.Success.rawValue,
+                    error.code != IndyErrorCode.PoolLedgerConfigAlreadyExistsError.rawValue {
+                    completion(error)
+                }
+                else {
+                    completion(nil)
+                }
+        }
+    }
+
+    private func openLedger(completion: @escaping (IndyHandle?, Error?)->Void) {
+        IndyPool.openLedger(withName: poolName, poolConfig: self.poolConfigJSON) { error, poolHandle in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                completion(nil, error)
+            }
+            else {
+                completion(poolHandle, nil)
+            }
+        }
+    }
+
+    private func createWallet(completion: @escaping (Error?)->Void) {
+        IndyWallet.sharedInstance()?.createWallet(
+            withConfig: self.walletConfigJSON,
+            credentials: self.credentialsJSON) { error in
+                if let error = error as NSError?,
+                    error.code != IndyErrorCode.Success.rawValue,
+                    error.code != IndyErrorCode.WalletAlreadyExistsError.rawValue {
+                    completion(error)
+                }
+                else {
+                    completion(nil)
+                }
+        }
+    }
+
+    private func openTheWallet(completion: @escaping (IndyHandle?, Error?)->Void) {
         IndyWallet.sharedInstance()?.open(
             withConfig: self.walletConfigJSON,
             credentials: self.credentialsJSON) { error, walletHandle in
@@ -159,6 +154,12 @@ let poolName = "pool"
                 }
                 completion(walletHandle, nil)
         }
+    }
+
+    private func send(error: NSError, for command: CDVInvokedUrlCommand) {
+        self.commandDelegate!.send(result(error: error),
+                                   callbackId: command.callbackId)
+
     }
 }
 

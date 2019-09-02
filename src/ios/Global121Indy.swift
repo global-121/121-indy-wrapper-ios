@@ -1,7 +1,8 @@
 import Indy
 
-// Uncomment the following line when editing this using Xcode
-//import Cordova
+#if canImport(Cordova)
+import Cordova
+#endif
 
 let poolName = "pool"
 

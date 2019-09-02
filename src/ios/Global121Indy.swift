@@ -3,7 +3,10 @@ import Indy
 // Uncomment the following line when editing this using Xcode
 //import Cordova
 
+let poolName = "pool"
+
 @objc class Global121Indy: CDVPlugin {
+
     var _poolConfigJSON: String?
     var poolConfigJSON: String? {
         if _poolConfigJSON == nil {
@@ -57,9 +60,19 @@ import Indy
         }
     }
 
+    func openLedger(completion: @escaping (IndyHandle?, Error?)->Void) {
+        IndyPool.openLedger(withName: poolName, poolConfig: self.poolConfigJSON) { error, poolHandle in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                completion(nil, error)
+            }
+            else {
+                completion(poolHandle, nil)
+            }
+        }
+    }
+
     @objc func openWallet(_ command: CDVInvokedUrlCommand) {
         let createPool = {
-            let poolName = "pool"
             IndyPool.createPoolLedgerConfig(
                 withPoolName: poolName,
                 poolConfig: self.poolConfigJSON) { error in
@@ -74,11 +87,9 @@ import Indy
                     }
 
                     print("pool available")
-
-                    IndyPool.openLedger(withName: poolName, poolConfig: self.poolConfigJSON) { error, poolHandle in
-                        if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
-                            self.commandDelegate!.send(result(error: error),
-                                                       callbackId: command.callbackId)
+                    self.openLedger{ (_, error) in
+                        if let error = error as NSError? {
+                            self.send(error: error, for: command)
                             return
                         }
 

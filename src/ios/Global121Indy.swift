@@ -71,19 +71,32 @@ let poolName = "pool"
         }
     }
 
-    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
-        let createPool = {
-            IndyPool.createPoolLedgerConfig(
-                withPoolName: poolName,
-                poolConfig: self.poolConfigJSON) { error in
+    func createPool(completion: @escaping (Error?)->Void) {
+        IndyPool.createPoolLedgerConfig(
+            withPoolName: poolName,
+            poolConfig: self.poolConfigJSON) { error in
+                if let error = error as NSError?,
+                    error.code != IndyErrorCode.Success.rawValue,
+                    error.code != IndyErrorCode.PoolLedgerConfigAlreadyExistsError.rawValue {
+                    completion(error)
+                }
+                else {
+                    completion(nil)
+                }
+        }
+    }
 
+    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
+        IndyPool.setProtocolVersion(2) { error in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.commandDelegate!.send(result(error: error),
+                                           callbackId: command.callbackId)
+            }
+            else {
+                self.createPool { error in
                     if let error = error as NSError? {
-                        if error.code != IndyErrorCode.Success.rawValue
-                            && error.code != IndyErrorCode.PoolLedgerConfigAlreadyExistsError.rawValue {
-                            self.commandDelegate!.send(result(error: error),
-                                                       callbackId: command.callbackId)
-                            return
-                        }
+                        self.send(error: error, for: command)
+                        return
                     }
 
                     print("pool available")
@@ -114,18 +127,8 @@ let poolName = "pool"
                                     callbackId: command.callbackId)
                             }
                         }
-
                     }
-            }
-        }
-
-        IndyPool.setProtocolVersion(2) { error in
-            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
-                self.commandDelegate!.send(result(error: error),
-                                           callbackId: command.callbackId)
-            }
-            else {
-                createPool()
+                }
             }
         }
     }

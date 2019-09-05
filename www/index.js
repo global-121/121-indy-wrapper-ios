@@ -8,6 +8,10 @@ exports.createWallet = function(password, success, error) {
   exec(success, error, "Global121Indy", "createWallet", [password])
 }
 
+exports.deleteWallet = function(success, error) {
+  exec(success, error, "Global121Indy", "deleteWallet", [])
+}
+
 exports.openWallet = function (success, error) {
   exec(success, error, 'Global121Indy', 'openWallet', [])
 }

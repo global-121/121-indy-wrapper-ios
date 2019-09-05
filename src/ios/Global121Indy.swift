@@ -88,6 +88,16 @@ let poolName = "pool"
         }
     }
 
+    @objc func deleteWallet(_ command: CDVInvokedUrlCommand) {
+        self.deleteWallet { error in
+            if let error = error as NSError? {
+                self.send(error: error, for: command)
+                return
+            }
+            self.sendOk(for: command)
+        }
+    }
+
     @objc func openWallet(_ command: CDVInvokedUrlCommand) {
         self.openTheWallet { handle, error in
             if let e = error as NSError? {
@@ -152,6 +162,20 @@ let poolName = "pool"
 
     private func createWallet(completion: @escaping (Error?)->Void) {
         IndyWallet.sharedInstance()?.createWallet(
+            withConfig: self.walletConfigJSON,
+            credentials: self.credentialsJSON) { error in
+                if let error = error as NSError?,
+                    error.code != IndyErrorCode.Success.rawValue {
+                    completion(error)
+                }
+                else {
+                    completion(nil)
+                }
+        }
+    }
+
+    private func deleteWallet(completion: @escaping (Error?)->Void) {
+        IndyWallet.sharedInstance()?.delete(
             withConfig: self.walletConfigJSON,
             credentials: self.credentialsJSON) { error in
                 if let error = error as NSError?,

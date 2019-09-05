@@ -55,4 +55,17 @@ exports.defineAutoTests = function () {
       }
     )
   })
+
+  it('can delete a wallet', done => {
+    Global121.Indy.deleteWallet(
+      result => {
+        expect(result).toBeNull()
+        done()
+      },
+      error => {
+        fail(error)
+        done()
+      }
+    )
+  })
 }

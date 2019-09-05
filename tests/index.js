@@ -1,5 +1,7 @@
 exports.defineAutoTests = function () {
 
+  let password = "shh, secret!"
+
   setupTest = done => {
     Global121.Indy.setup(
       result => {
@@ -17,7 +19,7 @@ exports.defineAutoTests = function () {
   it('can perform setup more than once', setupTest)
 
   it('can create a wallet', done => {
-    Global121.Indy.createWallet("password",
+    Global121.Indy.createWallet(password,
       result => {
         expect(result).toBeNull()
         done()
@@ -30,7 +32,7 @@ exports.defineAutoTests = function () {
   })
 
   it('throws when wallet was already created', done => {
-    Global121.Indy.createWallet("password",
+    Global121.Indy.createWallet(password,
       result => {
         fail("expected wallet creation to throw error")
         done()
@@ -44,6 +46,7 @@ exports.defineAutoTests = function () {
 
   it('opens and closes wallet', done => {
     Global121.Indy.openWallet(
+      password,
       handle => {
         expect(handle).toBeDefined()
         Global121.Indy.closeWallet(handle)
@@ -57,7 +60,7 @@ exports.defineAutoTests = function () {
   })
 
   it('can delete a wallet', done => {
-    Global121.Indy.deleteWallet(
+    Global121.Indy.deleteWallet(password,
       result => {
         expect(result).toBeNull()
         done()

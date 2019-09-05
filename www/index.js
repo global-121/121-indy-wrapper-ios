@@ -8,12 +8,12 @@ exports.createWallet = function(password, success, error) {
   exec(success, error, "Global121Indy", "createWallet", [password])
 }
 
-exports.deleteWallet = function(success, error) {
-  exec(success, error, "Global121Indy", "deleteWallet", [])
+exports.deleteWallet = function(password, success, error) {
+  exec(success, error, "Global121Indy", "deleteWallet", [password])
 }
 
-exports.openWallet = function (success, error) {
-  exec(success, error, 'Global121Indy', 'openWallet', [])
+exports.openWallet = function (password, success, error) {
+  exec(success, error, 'Global121Indy', 'openWallet', [password])
 }
 
 exports.closeWallet = function (arg0, success, error) {

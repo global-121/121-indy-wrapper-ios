@@ -38,16 +38,6 @@ let poolName = "pool"
         return _walletConfigJSON
     }
 
-    var _credentialsJSON: String?
-    var credentialsJSON: String? {
-        if _credentialsJSON == nil {
-            let credentials = ["key": "welcome123"]
-            let credentialsJSONdata = try! JSONSerialization.data(withJSONObject: credentials)
-            _credentialsJSON = String(data: credentialsJSONdata, encoding: .utf8)
-        }
-        return _credentialsJSON
-    }
-
     @objc func setup(_ command: CDVInvokedUrlCommand) {
         guard !setupDone else {
             sendOk(for: command)
@@ -79,7 +69,8 @@ let poolName = "pool"
     }
 
     @objc func createWallet(_ command: CDVInvokedUrlCommand) {
-        self.createWallet { error in
+        let password = command.arguments[0] as! String
+        self.createWallet(password: password) { error in
             if let error = error as NSError? {
                 self.send(error: error, for: command)
                 return
@@ -89,7 +80,8 @@ let poolName = "pool"
     }
 
     @objc func deleteWallet(_ command: CDVInvokedUrlCommand) {
-        self.deleteWallet { error in
+        let password = command.arguments[0] as! String
+        self.deleteWallet(password: password) { error in
             if let error = error as NSError? {
                 self.send(error: error, for: command)
                 return
@@ -99,7 +91,8 @@ let poolName = "pool"
     }
 
     @objc func openWallet(_ command: CDVInvokedUrlCommand) {
-        self.openTheWallet { handle, error in
+        let password = command.arguments[0] as! String
+        self.openWallet(password: password) { handle, error in
             if let e = error as NSError? {
                 self.send(error: e, for: command)
                 return
@@ -160,10 +153,10 @@ let poolName = "pool"
         }
     }
 
-    private func createWallet(completion: @escaping (Error?)->Void) {
+    private func createWallet(password: String, completion: @escaping (Error?)->Void) {
         IndyWallet.sharedInstance()?.createWallet(
             withConfig: self.walletConfigJSON,
-            credentials: self.credentialsJSON) { error in
+            credentials: credentials(password: password)) { error in
                 if let error = error as NSError?,
                     error.code != IndyErrorCode.Success.rawValue {
                     completion(error)
@@ -174,10 +167,10 @@ let poolName = "pool"
         }
     }
 
-    private func deleteWallet(completion: @escaping (Error?)->Void) {
+    private func deleteWallet(password: String, completion: @escaping (Error?)->Void) {
         IndyWallet.sharedInstance()?.delete(
             withConfig: self.walletConfigJSON,
-            credentials: self.credentialsJSON) { error in
+            credentials: credentials(password: password)) { error in
                 if let error = error as NSError?,
                     error.code != IndyErrorCode.Success.rawValue {
                     completion(error)
@@ -188,10 +181,10 @@ let poolName = "pool"
         }
     }
 
-    private func openTheWallet(completion: @escaping (IndyHandle?, Error?)->Void) {
+    private func openWallet(password: String, completion: @escaping (IndyHandle?, Error?)->Void) {
         IndyWallet.sharedInstance()?.open(
             withConfig: self.walletConfigJSON,
-            credentials: self.credentialsJSON) { error, walletHandle in
+            credentials: credentials(password: password)) { error, walletHandle in
                 if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                     completion(nil, error)
                     return
@@ -211,6 +204,12 @@ let poolName = "pool"
                                    callbackId: command.callbackId)
 
     }
+}
+
+func credentials(password: String) -> String {
+    let credentials = ["key": password]
+    let credentialsJSONdata = try! JSONSerialization.data(withJSONObject: credentials)
+    return String(data: credentialsJSONdata, encoding: .utf8)!
 }
 
 func result(error: NSError) -> CDVPluginResult {

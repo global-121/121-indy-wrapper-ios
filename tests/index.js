@@ -1,6 +1,6 @@
 exports.defineAutoTests = function () {
 
-  it('performs setup', done => {
+  setupTest = done => {
     Global121.Indy.setup(
       result => {
         expect(result).toBeNull()
@@ -11,20 +11,10 @@ exports.defineAutoTests = function () {
         done()
       }
     )
-  })
+  }
 
-  it('can perform setup more than once', done => {
-    Global121.Indy.setup(
-      result => {
-        expect(result).toBeNull()
-        done()
-      },
-      error => {
-        fail(error)
-        done()
-      }
-    )
-  })
+  it('performs setup', setupTest)
+  it('can perform setup more than once', setupTest)
 
   it('opens and closes wallet', done => {
     Global121.Indy.openWallet(

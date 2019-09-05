@@ -46,8 +46,7 @@ let poolName = "pool"
         return _credentialsJSON
     }
 
-
-    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
+    @objc func setup(_ command: CDVInvokedUrlCommand) {
         setProtocolVersion() { error in
             if let error = error as NSError? {
                 self.send(error: error, for: command)
@@ -60,35 +59,39 @@ let poolName = "pool"
                     return
                 }
 
-                print("pool available")
                 self.openLedger{ (_, error) in
                     if let error = error as NSError? {
                         self.send(error: error, for: command)
                         return
                     }
 
-                    print("pool open")
-                    self.createWallet { error in
-                        if let error = error as NSError? {
-                            self.send(error: error, for: command)
-                            return
-                        }
-
-                        print("wallet available")
-                        self.openTheWallet { handle, error in
-                            if let e = error as NSError? {
-                                self.send(error: e, for: command)
-                                return
-                            }
-
-                            print("wallet open")
-                            self.commandDelegate!.send(
-                                CDVPluginResult(status: CDVCommandStatus_OK,
-                                                messageAs: handle!),
-                                callbackId: command.callbackId)
-                        }
-                    }
+                    self.commandDelegate!.send(
+                        CDVPluginResult(status: CDVCommandStatus_OK),
+                        callbackId: command.callbackId)
                 }
+            }
+        }
+    }
+
+    @objc func openWallet(_ command: CDVInvokedUrlCommand) {
+        self.createWallet { error in
+            if let error = error as NSError? {
+                self.send(error: error, for: command)
+                return
+            }
+
+            print("wallet available")
+            self.openTheWallet { handle, error in
+                if let e = error as NSError? {
+                    self.send(error: e, for: command)
+                    return
+                }
+
+                print("wallet open")
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: handle!),
+                    callbackId: command.callbackId)
             }
         }
     }

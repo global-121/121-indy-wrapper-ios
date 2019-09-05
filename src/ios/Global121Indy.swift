@@ -75,7 +75,7 @@ let poolName = "pool"
                         }
 
                         print("wallet available")
-                        self.openTheWallet { _, error in
+                        self.openTheWallet { handle, error in
                             if let e = error as NSError? {
                                 self.send(error: e, for: command)
                                 return
@@ -84,11 +84,24 @@ let poolName = "pool"
                             print("wallet open")
                             self.commandDelegate!.send(
                                 CDVPluginResult(status: CDVCommandStatus_OK,
-                                                messageAs: "wallet open"),
+                                                messageAs: handle!),
                                 callbackId: command.callbackId)
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @objc func closeWallet(_ command: CDVInvokedUrlCommand) {
+        let handle = command.arguments[0] as! IndyHandle
+        IndyWallet.sharedInstance().close(withHandle: handle) { error in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK),
+                    callbackId: command.callbackId)
             }
         }
     }

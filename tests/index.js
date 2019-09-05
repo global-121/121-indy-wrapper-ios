@@ -1,9 +1,10 @@
 exports.defineAutoTests = function () {
-  it('returns error code from Indy framework', done => {
+  it('opens and closes wallet', done => {
     Global121.Indy.openWallet(
       null,
-      msg => {
-        expect(msg).toBe('wallet open')
+      handle => {
+        expect(handle).toBeDefined()
+        Global121.Indy.closeWallet(handle)
         done()
       },
       msg => {

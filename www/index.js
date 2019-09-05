@@ -16,6 +16,6 @@ exports.openWallet = function (password, success, error) {
   exec(success, error, 'Global121Indy', 'openWallet', [password])
 }
 
-exports.closeWallet = function (arg0, success, error) {
-  exec(success, error, 'Global121Indy', 'closeWallet', [arg0])
+exports.closeWallet = function (handle, success, error) {
+  exec(success, error, 'Global121Indy', 'closeWallet', [handle])
 }

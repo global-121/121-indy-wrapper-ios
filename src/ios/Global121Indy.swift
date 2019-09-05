@@ -8,6 +8,8 @@ let poolName = "pool"
 
 @objc class Global121Indy: CDVPlugin {
 
+    var setupDone = false
+
     var _poolConfigJSON: String?
     var poolConfigJSON: String? {
         if _poolConfigJSON == nil {
@@ -47,6 +49,13 @@ let poolName = "pool"
     }
 
     @objc func setup(_ command: CDVInvokedUrlCommand) {
+        guard !setupDone else {
+            self.commandDelegate!.send(
+                CDVPluginResult(status: CDVCommandStatus_OK),
+                callbackId: command.callbackId)
+            return
+        }
+
         setProtocolVersion() { error in
             if let error = error as NSError? {
                 self.send(error: error, for: command)
@@ -64,7 +73,7 @@ let poolName = "pool"
                         self.send(error: error, for: command)
                         return
                     }
-
+                    self.setupDone = true
                     self.commandDelegate!.send(
                         CDVPluginResult(status: CDVCommandStatus_OK),
                         callbackId: command.callbackId)

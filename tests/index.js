@@ -16,6 +16,32 @@ exports.defineAutoTests = function () {
   it('performs setup', setupTest)
   it('can perform setup more than once', setupTest)
 
+  it('can create a wallet', done => {
+    Global121.Indy.createWallet("password",
+      result => {
+        expect(result).toBeNull()
+        done()
+      },
+      error => {
+        fail(error)
+        done()
+      }
+    )
+  })
+
+  it('throws when wallet was already created', done => {
+    Global121.Indy.createWallet("password",
+      result => {
+        fail("expected wallet creation to throw error")
+        done()
+      },
+      error => {
+        expect(error).toBeDefined()
+        done()
+      }
+    )
+  })
+
   it('opens and closes wallet', done => {
     Global121.Indy.openWallet(
       handle => {

@@ -50,9 +50,7 @@ let poolName = "pool"
 
     @objc func setup(_ command: CDVInvokedUrlCommand) {
         guard !setupDone else {
-            self.commandDelegate!.send(
-                CDVPluginResult(status: CDVCommandStatus_OK),
-                callbackId: command.callbackId)
+            sendOk(for: command)
             return
         }
 
@@ -74,9 +72,7 @@ let poolName = "pool"
                         return
                     }
                     self.setupDone = true
-                    self.commandDelegate!.send(
-                        CDVPluginResult(status: CDVCommandStatus_OK),
-                        callbackId: command.callbackId)
+                    self.sendOk(for: command)
                 }
             }
         }
@@ -111,9 +107,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
-                    CDVPluginResult(status: CDVCommandStatus_OK),
-                    callbackId: command.callbackId)
+                self.sendOk(for: command)
             }
         }
     }
@@ -180,6 +174,12 @@ let poolName = "pool"
                 }
                 completion(walletHandle, nil)
         }
+    }
+
+    private func sendOk(for command: CDVInvokedUrlCommand) {
+        self.commandDelegate!.send(CDVPluginResult(status: CDVCommandStatus_OK),
+                                   callbackId: command.callbackId)
+
     }
 
     private func send(error: NSError, for command: CDVInvokedUrlCommand) {

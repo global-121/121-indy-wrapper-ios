@@ -20,24 +20,28 @@ function closeWallet (handle, success, error) {
   exec(success, error, 'Global121Indy', 'closeWallet', [handle])
 }
 
-function generateDid (password, success, error) {
+function withOpenWallet(password, success, error, action) {
   openWallet(password,
-    function walletOpened(handle) {
-      exec(
-        function didGenerated(did, verificationKey) {
-          closeWallet(handle,
-            function walletClosed () {
-              success("did:sov:" + did, verificationKey)
-            },
-            error
-          )
-        },
-        error,
-        'Global121Indy', 'generateDid', [handle]
-      )
-    },
+    handle => action(handle,
+      (...results) => closeWallet(handle,
+        () => success(...results),
+        error
+      ),
+      (...failure) => closeWallet(handle,
+        () => error(...failure),
+        () => error(...failure))
+    ),
     error
   )
+}
+
+function generateDid (password, success, error) {
+  withOpenWallet(password, success, error, function(handle, success, error) {
+    function didGenerated(did, verificationKey) {
+      success("did:sov:" + did, verificationKey)
+    }
+    exec(didGenerated, error, 'Global121Indy', 'generateDid', [handle])
+  })
 }
 
 exports.setup = setup

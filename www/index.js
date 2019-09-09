@@ -1,32 +1,32 @@
 var exec = require('cordova/exec')
 
-exports.setup = function (success, error) {
+function setup (success, error) {
   exec(success, error, 'Global121Indy', 'setup', [])
 }
 
-exports.createWallet = function(password, success, error) {
+function createWallet (password, success, error) {
   exec(success, error, "Global121Indy", "createWallet", [password])
 }
 
-exports.deleteWallet = function(password, success, error) {
+function deleteWallet (password, success, error) {
   exec(success, error, "Global121Indy", "deleteWallet", [password])
 }
 
-exports.openWallet = function (password, success, error) {
+function openWallet (password, success, error) {
   exec(success, error, 'Global121Indy', 'openWallet', [password])
 }
 
-exports.closeWallet = function (handle, success, error) {
+function closeWallet (handle, success, error) {
   exec(success, error, 'Global121Indy', 'closeWallet', [handle])
 }
 
-exports.generateDid = function (password, success, error) {
-  exports.openWallet(
+function generateDid (password, success, error) {
+  openWallet(
     password,
     handle => {
       exec(
         (did, verificationKey) => {
-          exports.closeWallet(
+          closeWallet(
             handle,
             () => success("did:sov:" + did, verificationKey),
             error
@@ -39,3 +39,10 @@ exports.generateDid = function (password, success, error) {
     error
   )
 }
+
+exports.setup = setup
+exports.createWallet = createWallet
+exports.deleteWallet = deleteWallet
+exports.openWallet = openWallet
+exports.closeWallet = closeWallet
+exports.generateDid = generateDid

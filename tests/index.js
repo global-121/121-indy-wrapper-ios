@@ -34,7 +34,7 @@ exports.defineAutoTests = function () {
   it('throws when wallet was already created', done => {
     Global121.Indy.createWallet(password,
       result => {
-        fail("expected wallet creation to throw error")
+        fail("expected wallet creation to fail")
         done()
       },
       error => {
@@ -54,6 +54,33 @@ exports.defineAutoTests = function () {
       },
       msg => {
         fail('Got an error: ' + msg)
+        done()
+      }
+    )
+  })
+
+  it('generates a DID', done => {
+    Global121.Indy.generateDid(password,
+      (did, verificationKey) => {
+        expect(did).toContain('did:sov:')
+        expect(verificationKey).not.toBeNull()
+        done()
+      },
+      error => {
+        fail(error)
+        done()
+      }
+    )
+  })
+
+  it('fails generating a DID when password is incorrect', done => {
+    Global121.Indy.generateDid("wrong password",
+      result => {
+        fail("expected DID generation to fail")
+        done()
+      },
+      error => {
+        expect(error).toBeDefined()
         done()
       }
     )

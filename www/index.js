@@ -47,6 +47,4 @@ function generateDid (password, success, error) {
 exports.setup = setup
 exports.createWallet = createWallet
 exports.deleteWallet = deleteWallet
-exports.openWallet = openWallet
-exports.closeWallet = closeWallet
 exports.generateDid = generateDid

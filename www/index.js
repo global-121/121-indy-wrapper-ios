@@ -21,14 +21,14 @@ function closeWallet (handle, success, error) {
 }
 
 function generateDid (password, success, error) {
-  openWallet(
-    password,
-    handle => {
+  openWallet(password,
+    function walletOpened(handle) {
       exec(
-        (did, verificationKey) => {
-          closeWallet(
-            handle,
-            () => success("did:sov:" + did, verificationKey),
+        function didGenerated(did, verificationKey) {
+          closeWallet(handle,
+            function walletClosed () {
+              success("did:sov:" + did, verificationKey)
+            },
             error
           )
         },

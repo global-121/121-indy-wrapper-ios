@@ -28,29 +28,19 @@ exports.defineAutoTests = function () {
   })
 
   it('generates a DID', async done => {
-    Global121.Indy.generateDid(password,
-      did => {
-        expect(did).toContain('did:sov:')
-        done()
-      },
-      error => {
-        fail(error)
-        done()
-      }
-    )
+    let did = await Global121.Indy.generateDid(password)
+    expect(did).toContain('did:sov:')
+    done()
   })
 
-  it('fails generating a DID when password is incorrect', done => {
-    Global121.Indy.generateDid("wrong password",
-      result => {
-        fail("expected DID generation to fail")
-        done()
-      },
-      error => {
-        expect(error).toBeDefined()
-        done()
-      }
-    )
+  it('fails generating a DID when password is incorrect', async done => {
+    try {
+      await Global121.Indy.generateDid("wrong password")
+      fail("expected DID generation to fail")
+    } catch (error) {
+      expect(error).toBeDefined()
+    }
+    done()
   })
 
   it('can delete a wallet', async done => {

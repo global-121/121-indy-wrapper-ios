@@ -29,9 +29,8 @@ exports.defineAutoTests = function () {
 
   it('generates a DID', async done => {
     Global121.Indy.generateDid(password,
-      (did, verificationKey) => {
+      did => {
         expect(did).toContain('did:sov:')
-        expect(verificationKey).not.toBeNull()
         done()
       },
       error => {

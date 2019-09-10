@@ -1,23 +1,23 @@
 var exec = require('cordova/exec')
 
 function setup (success, error) {
-  exec(success, error, 'Global121Indy', 'setup', [])
+  return execPromise(success, error, 'Global121Indy', 'setup', [])
 }
 
 function createWallet (password, success, error) {
-  exec(success, error, "Global121Indy", "createWallet", [password])
+  return execPromise(success, error, "Global121Indy", "createWallet", [password])
 }
 
 function deleteWallet (password, success, error) {
-  exec(success, error, "Global121Indy", "deleteWallet", [password])
+  return execPromise(success, error, "Global121Indy", "deleteWallet", [password])
 }
 
 function openWallet (password, success, error) {
-  exec(success, error, 'Global121Indy', 'openWallet', [password])
+  return execPromise(success, error, 'Global121Indy', 'openWallet', [password])
 }
 
 function closeWallet (handle, success, error) {
-  exec(success, error, 'Global121Indy', 'closeWallet', [handle])
+  return execPromise(success, error, 'Global121Indy', 'closeWallet', [handle])
 }
 
 function withOpenWallet(password, success, error, action) {
@@ -42,6 +42,16 @@ function generateDid (password, success, error) {
     }
     exec(didGenerated, error, 'Global121Indy', 'generateDid', [handle])
   })
+}
+
+function execPromise (success, error, ...args) {
+  if (success || error) {
+    exec(success, error, ...args)
+  } else {
+    return new Promise((resolve, reject) => {
+      exec(resolve, reject, ...args)
+    })
+  }
 }
 
 exports.setup = setup

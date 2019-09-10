@@ -20,28 +20,18 @@ function closeWallet (handle, success, error) {
   return execPromise(success, error, 'Global121Indy', 'closeWallet', [handle])
 }
 
-function withOpenWallet(password, success, error, action) {
-  openWallet(password,
-    handle => action(handle,
-      (...results) => closeWallet(handle,
-        () => success(...results),
-        error
-      ),
-      (...failure) => closeWallet(handle,
-        () => error(...failure),
-        () => error(...failure))
-    ),
-    error
-  )
+function withOpenWallet(password, action) {
+  return openWallet(password)
+    .then(handle =>
+      action(handle)
+        .finally(() => closeWallet(handle)))
 }
 
 function generateDid (password, success, error) {
-  withOpenWallet(password, success, error, function(handle, success, error) {
-    function didGenerated(did, verificationKey) {
-      success("did:sov:" + did, verificationKey)
-    }
-    exec(didGenerated, error, 'Global121Indy', 'generateDid', [handle])
-  })
+  return withOpenWallet(password,
+    handle => execPromise(null, null, 'Global121Indy', 'generateDid', [handle]))
+    .then(([did]) => "did:sov:" + did)
+    .then(success, error)
 }
 
 function execPromise (success, error, ...args) {

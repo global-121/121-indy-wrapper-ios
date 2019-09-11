@@ -4,18 +4,26 @@ exports.defineAutoTests = function () {
   let password = "shh, secret!"
 
   setupTest = async done => {
-    let result = await setup()
-    expect(result).toBeNull()
-    done()
+    try {
+      let result = await setup()
+      expect(result).toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   }
 
   it('performs setup', setupTest)
   it('can perform setup more than once', setupTest)
 
   it('can create a wallet', async done => {
-    let result = await createWallet(password)
-    expect(result).toBeNull()
-    done()
+    try {
+      let result = await createWallet(password)
+      expect(result).toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 
   it('throws when wallet was already created', async done => {
@@ -29,9 +37,13 @@ exports.defineAutoTests = function () {
   })
 
   it('generates a DID', async done => {
-    let did = await generateDid(password)
-    expect(did).toContain('did:sov:')
-    done()
+    try {
+      let did = await generateDid(password)
+      expect(did).toContain('did:sov:')
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 
   it('fails generating a DID when password is incorrect', async done => {
@@ -45,8 +57,12 @@ exports.defineAutoTests = function () {
   })
 
   it('can delete a wallet', async done => {
-    let result = await deleteWallet(password)
-    expect(result).toBeNull()
-    done()
+    try {
+      let result = await deleteWallet(password)
+      expect(result).toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 }

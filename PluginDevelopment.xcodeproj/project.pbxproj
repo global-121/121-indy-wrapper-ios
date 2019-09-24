@@ -15,6 +15,8 @@
 		02EBC7F52319743300F28DC7 /* sovrin_pool_transactions_sandbox_genesis.txt in Resources */ = {isa = PBXBuildFile; fileRef = 02EBC7F42319743300F28DC7 /* sovrin_pool_transactions_sandbox_genesis.txt */; };
 		1837AFF2F92886152B8BB06F /* Pods_PluginDevelopmentTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA237A44F4AEF3ACE1A8114B /* Pods_PluginDevelopmentTests.framework */; };
 		1C3159840DF553DAC2EF1ECD /* Pods_PluginDevelopment.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3FAADABF845EB148B705A08 /* Pods_PluginDevelopment.framework */; };
+		5CDE412D233A1AD2001FF4D6 /* docker_pool_transactions_genesis.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5CDE412C233A1AD2001FF4D6 /* docker_pool_transactions_genesis.txt */; };
+		5CDE412F233A1BB1001FF4D6 /* PoolConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDE412E233A1BB1001FF4D6 /* PoolConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +40,8 @@
 		02EBC7EA231964AF00F28DC7 /* Indy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Indy.framework; sourceTree = "<group>"; };
 		02EBC7F42319743300F28DC7 /* sovrin_pool_transactions_sandbox_genesis.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sovrin_pool_transactions_sandbox_genesis.txt; sourceTree = "<group>"; };
 		2849E3BEA8A4BBC257F23761 /* Pods-PluginDevelopmentTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginDevelopmentTests.release.xcconfig"; path = "Target Support Files/Pods-PluginDevelopmentTests/Pods-PluginDevelopmentTests.release.xcconfig"; sourceTree = "<group>"; };
+		5CDE412C233A1AD2001FF4D6 /* docker_pool_transactions_genesis.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = docker_pool_transactions_genesis.txt; sourceTree = "<group>"; };
+		5CDE412E233A1BB1001FF4D6 /* PoolConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoolConfig.swift; sourceTree = "<group>"; };
 		7730564A18D865D2BB3FB5BF /* Pods-PluginDevelopmentTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginDevelopmentTests.debug.xcconfig"; path = "Target Support Files/Pods-PluginDevelopmentTests/Pods-PluginDevelopmentTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8A6F2B6DE59E6E9C8C2AEBEC /* Pods-PluginDevelopment.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginDevelopment.debug.xcconfig"; path = "Target Support Files/Pods-PluginDevelopment/Pods-PluginDevelopment.debug.xcconfig"; sourceTree = "<group>"; };
 		A3FAADABF845EB148B705A08 /* Pods_PluginDevelopment.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PluginDevelopment.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,7 +123,9 @@
 			isa = PBXGroup;
 			children = (
 				02EBC7E72319649A00F28DC7 /* Global121Indy.swift */,
+				5CDE412C233A1AD2001FF4D6 /* docker_pool_transactions_genesis.txt */,
 				02EBC7F42319743300F28DC7 /* sovrin_pool_transactions_sandbox_genesis.txt */,
+				5CDE412E233A1BB1001FF4D6 /* PoolConfig.swift */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -246,6 +252,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5CDE412D233A1AD2001FF4D6 /* docker_pool_transactions_genesis.txt in Resources */,
 				02EBC7F52319743300F28DC7 /* sovrin_pool_transactions_sandbox_genesis.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,6 +319,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02EBC7E82319649A00F28DC7 /* Global121Indy.swift in Sources */,
+				5CDE412F233A1BB1001FF4D6 /* PoolConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

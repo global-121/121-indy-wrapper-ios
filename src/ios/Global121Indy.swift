@@ -10,18 +10,7 @@ let poolName = "pool"
 
     var setupDone = false
 
-    var _poolConfigJSON: String?
-    var poolConfigJSON: String? {
-        if _poolConfigJSON == nil {
-            let poolConfigPath = Bundle.main.path(
-                forResource: "sovrin_pool_transactions_sandbox_genesis",
-                ofType: "txt")!
-            let config = ["genesis_txn": poolConfigPath]
-            let configJSONdata = try! JSONSerialization.data(withJSONObject: config)
-            _poolConfigJSON = String(data: configJSONdata, encoding: .utf8)
-        }
-        return _poolConfigJSON
-    }
+    lazy var poolConfigJSON = PoolConfig.sovrinSandbox
 
     var _walletConfigJSON: String?
     var walletConfigJSON: String? {

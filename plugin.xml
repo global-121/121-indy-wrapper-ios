@@ -12,7 +12,9 @@
     </config-file>
     <dependency id="cordova-plugin-add-swift-support" version="2.0.2" />
     <source-file src="src/ios/Global121Indy.swift" />
+    <source-file src="src/ios/PoolConfig.swift" />
     <resource-file src="src/ios/sovrin_pool_transactions_sandbox_genesis.txt" />
+    <resource-file src="src/ios/docker_pool_transactions_genesis.txt" />
     <framework src="vendor/Indy.framework" custom="true" embed="true" />
   </platform>
 </plugin>

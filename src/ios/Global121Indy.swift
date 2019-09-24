@@ -79,6 +79,20 @@ let poolName = "pool"
         }
     }
 
+    @objc func createMasterSecret(_ command: CDVInvokedUrlCommand) {
+        let wallet = command.arguments[0] as! IndyHandle
+        IndyAnoncreds.proverCreateMasterSecret("secret", walletHandle: wallet) { error, id in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: id!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     @objc func deleteWallet(_ command: CDVInvokedUrlCommand) {
         let password = command.arguments[0] as! String
         self.deleteWallet(password: password) { error in

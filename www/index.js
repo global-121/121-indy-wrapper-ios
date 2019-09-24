@@ -8,6 +8,12 @@ function createWallet (password, success, error) {
   return execPromise(success, error, "Global121Indy", "createWallet", [password])
 }
 
+function createMasterSecret (password, success, error) {
+  return withOpenWallet(password, handle =>
+    execPromise(null, null, 'Global121Indy', 'createMasterSecret', [handle]))
+  .then(success, error)
+}
+
 function deleteWallet (password, success, error) {
   return execPromise(success, error, "Global121Indy", "deleteWallet", [password])
 }
@@ -46,5 +52,6 @@ function execPromise (success, error, ...args) {
 
 exports.setup = setup
 exports.createWallet = createWallet
+exports.createMasterSecret = createMasterSecret
 exports.deleteWallet = deleteWallet
 exports.generateDid = generateDid

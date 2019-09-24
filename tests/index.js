@@ -1,6 +1,13 @@
 exports.defineAutoTests = function () {
 
-  let { setup, createWallet, deleteWallet, generateDid } = Global121.Indy
+  let {
+    setup,
+    createWallet,
+    createMasterSecret,
+    deleteWallet,
+    generateDid,
+  } = Global121.Indy
+
   let password = "shh, secret!"
 
   setupTest = async done => {
@@ -30,6 +37,26 @@ exports.defineAutoTests = function () {
     try {
       await createWallet(password)
       fail("expected wallet creation to fail")
+    } catch (error) {
+      expect(error).toBeDefined()
+    }
+    done()
+  })
+
+  it('can create a master secret for zero knowledge proofs', async done => {
+    try {
+      let result = await createMasterSecret(password)
+      expect(result).not.toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it('fails creating a master secret when password is incorrect', async done => {
+    try {
+      await createMasterSecret('wrong password')
+      fail("expected master secret creation to fail")
     } catch (error) {
       expect(error).toBeDefined()
     }

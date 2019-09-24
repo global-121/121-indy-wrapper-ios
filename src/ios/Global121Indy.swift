@@ -10,7 +10,7 @@ let poolName = "pool"
 
     var setupDone = false
 
-    lazy var poolConfigJSON = PoolConfig.sovrinSandbox
+    lazy var poolConfigJSON = PoolConfig.local
 
     var _walletConfigJSON: String?
     var walletConfigJSON: String? {

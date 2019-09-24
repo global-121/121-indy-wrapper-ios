@@ -34,8 +34,8 @@ function withOpenWallet(password, action) {
 }
 
 function generateDid (password, success, error) {
-  return withOpenWallet(password,
-    handle => execPromise(null, null, 'Global121Indy', 'generateDid', [handle]))
+  return withOpenWallet(password, handle =>
+      execPromise(null, null, 'Global121Indy', 'generateDid', [handle]))
     .then(([did]) => "did:sov:" + did)
     .then(success, error)
 }

@@ -34,8 +34,12 @@ function withOpenWallet(password, action) {
 }
 
 function generateDid (password, success, error) {
+  return generateDidFromSeed(password, null, success, error)
+}
+
+function generateDidFromSeed (password, seed, success, error) {
   return withOpenWallet(password, handle =>
-      execPromise(null, null, 'Global121Indy', 'generateDid', [handle]))
+      execPromise(null, null, 'Global121Indy', 'generateDid', [handle, seed]))
     .then(([did]) => "did:sov:" + did)
     .then(success, error)
 }
@@ -55,3 +59,4 @@ exports.createWallet = createWallet
 exports.createMasterSecret = createMasterSecret
 exports.deleteWallet = deleteWallet
 exports.generateDid = generateDid
+exports.generateDidFromSeed = generateDidFromSeed

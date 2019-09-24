@@ -6,6 +6,7 @@ exports.defineAutoTests = function () {
     createMasterSecret,
     deleteWallet,
     generateDid,
+    generateDidFromSeed,
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -67,6 +68,16 @@ exports.defineAutoTests = function () {
     try {
       let did = await generateDid(password)
       expect(did).toContain('did:sov:')
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it('generates a DID with a seed', async done => {
+    try {
+      let did = await generateDidFromSeed(password, '000000000000000000000000Steward1')
+      expect(did).toEqual('did:sov:Th7MpTaRZVRYnPiabds81Y')
       done()
     } catch (error) {
       done.fail(error)

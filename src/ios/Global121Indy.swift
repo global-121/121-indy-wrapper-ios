@@ -121,7 +121,9 @@ let poolName = "pool"
 
     @objc func generateDid(_ command: CDVInvokedUrlCommand) {
         let wallet = command.arguments[0] as! IndyHandle
-        IndyDid.createAndStoreMyDid("{}", walletHandle: wallet) { error, did, verificationKey in
+        let seed = command.arguments[1] as? String
+        let json = seed == nil ? "{}" : "{ \"seed\": \"\(seed!)\" }"
+        IndyDid.createAndStoreMyDid(json, walletHandle: wallet) { error, did, verificationKey in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {

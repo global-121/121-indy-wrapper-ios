@@ -18,8 +18,6 @@ exports.defineAutoTests = function () {
     did: 'did:sov:Th7MpTaRZVRYnPiabds81Y',
     verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
   }
-  var anchor
-
   let schema = {
     id: '1',
     name: 'gvt',
@@ -115,6 +113,8 @@ exports.defineAutoTests = function () {
     done()
   })
 
+  var anchor
+
   it('adds a trust anchor to the ledger', async done => {
     try {
       anchor = await generateDid(password)
@@ -149,13 +149,15 @@ exports.defineAutoTests = function () {
     done()
   })
 
+  var credential
+
   it('creates a credential definition', async done => {
     try {
-      let { id, definition } = await createCredentialDefinition(
+      credential = await createCredentialDefinition(
         password, anchor.did, schema, 'tag'
       )
-      expect(id).toBeDefined()
-      expect(definition).toBeDefined()
+      expect(credential.id).toBeDefined()
+      expect(credential.definition).toBeDefined()
       done()
     } catch (error) {
       done.fail(error)

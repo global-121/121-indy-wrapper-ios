@@ -159,6 +159,21 @@ let poolName = "pool"
         }
     }
 
+    @objc func buildSchemaRequest(_ command: CDVInvokedUrlCommand) {
+        let did = command.arguments[0] as! String
+        let schema = command.arguments[1] as! String
+        IndyLedger.buildSchemaRequest(withSubmitterDid: did, data: schema) { error, request in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: request),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     @objc func signAndSubmitRequest(_ command: CDVInvokedUrlCommand) {
         guard let pool = self.poolHandle else {
             self.send(error: Errors.poolHandleMissing as NSError, for: command)

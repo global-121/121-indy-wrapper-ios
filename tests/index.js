@@ -7,7 +7,8 @@ exports.defineAutoTests = function () {
     deleteWallet,
     generateDid,
     generateDidFromSeed,
-    addTrustAnchor
+    addTrustAnchor,
+    createSchema
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -17,6 +18,14 @@ exports.defineAutoTests = function () {
     verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
   }
   var anchor
+
+  let schema = {
+    id: '1',
+    name: 'gvt',
+    version: '1.0',
+    ver: '1.0',
+    attrNames: ['age', 'sex', 'height', 'name']
+  }
 
   setupTest = async done => {
     try {
@@ -114,6 +123,27 @@ exports.defineAutoTests = function () {
     } catch (error) {
       done.fail(error)
     }
+  })
+
+  it('creates a schema', async done => {
+    try {
+      let id = await createSchema(password, anchor.did, schema)
+      expect(id).not.toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it('fails creating a schema with insufficient privileges', async done => {
+    try {
+      let unprivileged = await generateDid(password)
+      let id = await createSchema(password, unprivileged.did, schema)
+      fail("expected schema creation to fail")
+    } catch (error) {
+      expect(error).toBeDefined()
+    }
+    done()
   })
 
   it('can delete a wallet', async done => {

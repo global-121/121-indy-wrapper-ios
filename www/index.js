@@ -58,9 +58,29 @@ function buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey)
                      [raw(submitterDid), raw(anchorDid), anchorVerificationKey])
 }
 
+function createSchema (password, did, schema, success, error) {
+  return withOpenWallet(password, handle =>
+    buildSchemaRequest(did, schema)
+    .then(request => signAndSubmitRequest(handle, did, request)))
+  .then(success, error)
+}
+
+function buildSchemaRequest(did, schema) {
+  return execPromise(null, null, 'Global121Indy', 'buildSchemaRequest',
+                     [raw(did), JSON.stringify(schema)])
+}
+
 function signAndSubmitRequest(handle, did, request) {
   return execPromise(null, null, 'Global121Indy', 'signAndSubmitRequest',
                      [handle, raw(did), request])
+    .then(response => {
+      let json = JSON.parse(response)
+      if (json.result) {
+        return json.result.rootHash
+      } else {
+        throw new Error(json.reason)
+      }
+    })
 }
 
 function raw(did) {
@@ -84,3 +104,4 @@ exports.deleteWallet = deleteWallet
 exports.generateDid = generateDid
 exports.generateDidFromSeed = generateDidFromSeed
 exports.addTrustAnchor = addTrustAnchor
+exports.createSchema = createSchema

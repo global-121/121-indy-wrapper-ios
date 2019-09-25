@@ -44,6 +44,29 @@ function generateDidFromSeed (password, seed, success, error) {
     .then(success, error)
 }
 
+function addTrustAnchor(
+  password, submitterDid, anchorDid, anchorVerificationKey, success, error
+) {
+  return withOpenWallet(password, handle =>
+      buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey)
+      .then(request => signAndSubmitRequest(handle, submitterDid, request)))
+    .then(success, error)
+}
+
+function buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey) {
+  return execPromise(null, null, 'Global121Indy', 'buildTrustAnchorRequest',
+                     [raw(submitterDid), raw(anchorDid), anchorVerificationKey])
+}
+
+function signAndSubmitRequest(handle, did, request) {
+  return execPromise(null, null, 'Global121Indy', 'signAndSubmitRequest',
+                     [handle, raw(did), request])
+}
+
+function raw(did) {
+  return did.slice("did:sov:".length)
+}
+
 function execPromise (success, error, ...args) {
   if (success || error) {
     exec(success, error, ...args)
@@ -60,3 +83,4 @@ exports.createMasterSecret = createMasterSecret
 exports.deleteWallet = deleteWallet
 exports.generateDid = generateDid
 exports.generateDidFromSeed = generateDidFromSeed
+exports.addTrustAnchor = addTrustAnchor

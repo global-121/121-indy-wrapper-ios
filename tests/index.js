@@ -7,6 +7,7 @@ exports.defineAutoTests = function () {
     deleteWallet,
     generateDid,
     generateDidFromSeed,
+    addTrustAnchor
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -15,6 +16,7 @@ exports.defineAutoTests = function () {
     did: 'did:sov:Th7MpTaRZVRYnPiabds81Y',
     verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
   }
+  var anchor
 
   setupTest = async done => {
     try {
@@ -99,6 +101,19 @@ exports.defineAutoTests = function () {
       expect(error).toBeDefined()
     }
     done()
+  })
+
+  it('adds a trust anchor to the ledger', async done => {
+    try {
+      anchor = await generateDid(password)
+      let response = await addTrustAnchor(
+        password, steward.did, anchor.did, anchor.verificationKey
+      )
+      expect(response).toBeDefined()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 
   it('can delete a wallet', async done => {

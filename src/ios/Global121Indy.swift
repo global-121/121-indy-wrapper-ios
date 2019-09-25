@@ -9,6 +9,7 @@ let poolName = "pool"
 @objc class Global121Indy: CDVPlugin {
 
     var setupDone = false
+    var poolHandle: IndyHandle?
 
     lazy var poolConfigJSON = PoolConfig.local
 
@@ -45,11 +46,12 @@ let poolName = "pool"
                     return
                 }
 
-                self.openLedger{ (_, error) in
+                self.openLedger{ (handle, error) in
                     if let error = error as NSError? {
                         self.send(error: error, for: command)
                         return
                     }
+                    self.poolHandle = handle
                     self.setupDone = true
                     self.sendOk(for: command)
                 }
@@ -130,6 +132,53 @@ let poolName = "pool"
                 self.commandDelegate!.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [did!, verificationKey!]),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func buildTrustAnchorRequest(_ command: CDVInvokedUrlCommand) {
+        let submitterDid = command.arguments[0] as! String
+        let anchorDid = command.arguments[1] as! String
+        let anchorVerificationKey = command.arguments[2] as! String
+        IndyLedger.buildNymRequest(
+            withSubmitterDid: submitterDid,
+            targetDID: anchorDid,
+            verkey: anchorVerificationKey,
+            alias: nil,
+            role: "TRUST_ANCHOR"
+        ) { error, request in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: request),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func signAndSubmitRequest(_ command: CDVInvokedUrlCommand) {
+        guard let pool = self.poolHandle else {
+            self.send(error: Errors.poolHandleMissing as NSError, for: command)
+            return
+        }
+        let wallet = command.arguments[0] as! IndyHandle
+        let did = command.arguments[1] as! String
+        let request = command.arguments[2] as! String
+        IndyLedger.signAndSubmitRequest(
+            request,
+            submitterDID: did,
+            poolHandle: pool,
+            walletHandle: wallet
+        ) { error, response in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: response),
                     callbackId: command.callbackId)
             }
         }
@@ -223,6 +272,10 @@ let poolName = "pool"
                                    callbackId: command.callbackId)
 
     }
+}
+
+enum Errors: String, Error {
+    case poolHandleMissing = "Ledger was not opened, did you call setup?"
 }
 
 func credentials(password: String) -> String {

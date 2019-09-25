@@ -8,7 +8,8 @@ exports.defineAutoTests = function () {
     generateDid,
     generateDidFromSeed,
     addTrustAnchor,
-    createSchema
+    createSchema,
+    createCredentialDefinition
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -26,6 +27,8 @@ exports.defineAutoTests = function () {
     ver: '1.0',
     attrNames: ['age', 'sex', 'height', 'name']
   }
+
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000
 
   setupTest = async done => {
     try {
@@ -144,6 +147,19 @@ exports.defineAutoTests = function () {
       expect(error).toBeDefined()
     }
     done()
+  })
+
+  it('creates a credential definition', async done => {
+    try {
+      let { id, definition } = await createCredentialDefinition(
+        password, anchor.did, schema, 'tag'
+      )
+      expect(id).toBeDefined()
+      expect(definition).toBeDefined()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 
   it('can delete a wallet', async done => {

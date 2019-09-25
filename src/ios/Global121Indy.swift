@@ -199,6 +199,30 @@ let poolName = "pool"
         }
     }
 
+    @objc func createCredentialDefinition(_ command: CDVInvokedUrlCommand) {
+        let wallet = command.arguments[0] as! IndyHandle
+        let did = command.arguments[1] as! String
+        let schema = command.arguments[2] as! String
+        let tag = command.arguments[3] as! String
+        IndyAnoncreds.issuerCreateAndStoreCredentialDef(
+            forSchema: schema,
+            issuerDID: did,
+            tag: tag,
+            type: nil,
+            configJSON: nil,
+            walletHandle: wallet
+        ) { error, id, json in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: [id!, json!]),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     private func setProtocolVersion(completion: @escaping (Error?)->Void) {
         IndyPool.setProtocolVersion(2) { error in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {

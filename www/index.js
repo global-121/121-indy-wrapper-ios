@@ -83,6 +83,16 @@ function signAndSubmitRequest(handle, did, request) {
     })
 }
 
+function createCredentialDefinition(password, did, schema, tag, success, error) {
+  return withOpenWallet(password, handle =>
+    execPromise(
+      null, null, 'Global121Indy', 'createCredentialDefinition',
+      [handle, raw(did), JSON.stringify(schema), tag]
+    ))
+  .then(([id, definition]) => ({ id, definition: JSON.parse(definition) }))
+  .then(success, error)
+}
+
 function raw(did) {
   return did.slice("did:sov:".length)
 }
@@ -105,3 +115,4 @@ exports.generateDid = generateDid
 exports.generateDidFromSeed = generateDidFromSeed
 exports.addTrustAnchor = addTrustAnchor
 exports.createSchema = createSchema
+exports.createCredentialDefinition = createCredentialDefinition

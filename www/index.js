@@ -93,6 +93,15 @@ function createCredentialDefinition(password, did, schema, tag, success, error) 
   .then(success, error)
 }
 
+function createCredentialOffer(password, credentialDefinitionId, success, error) {
+  return withOpenWallet(password, handle =>
+    execPromise(
+      null, null, 'Global121Indy', 'createCredentialOffer',
+      [handle, credentialDefinitionId]
+    ))
+  .then(success, error)
+}
+
 function raw(did) {
   return did.slice("did:sov:".length)
 }
@@ -116,3 +125,4 @@ exports.generateDidFromSeed = generateDidFromSeed
 exports.addTrustAnchor = addTrustAnchor
 exports.createSchema = createSchema
 exports.createCredentialDefinition = createCredentialDefinition
+exports.createCredentialOffer = createCredentialOffer

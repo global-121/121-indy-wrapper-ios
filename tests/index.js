@@ -9,7 +9,8 @@ exports.defineAutoTests = function () {
     generateDidFromSeed,
     addTrustAnchor,
     createSchema,
-    createCredentialDefinition
+    createCredentialDefinition,
+    createCredentialOffer
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -161,6 +162,16 @@ exports.defineAutoTests = function () {
       done()
     } catch (error) {
       done.fail(error)
+    }
+  })
+
+  it('creates a credential offer', async done => {
+    try {
+      let offer = await createCredentialOffer(password, credential.id)
+      expect(offer).toBeDefined()
+      done()
+    } catch(error) {
+      done.fail()
     }
   })
 

@@ -10,6 +10,11 @@ exports.defineAutoTests = function () {
   } = Global121.Indy
 
   let password = "shh, secret!"
+  let steward = {
+    seed: '000000000000000000000000Steward1',
+    did: 'did:sov:Th7MpTaRZVRYnPiabds81Y',
+    verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
+  }
 
   setupTest = async done => {
     try {
@@ -66,8 +71,9 @@ exports.defineAutoTests = function () {
 
   it('generates a DID', async done => {
     try {
-      let did = await generateDid(password)
+      let { did, verificationKey } = await generateDid(password)
       expect(did).toContain('did:sov:')
+      expect(verificationKey).toBeDefined()
       done()
     } catch (error) {
       done.fail(error)
@@ -76,8 +82,9 @@ exports.defineAutoTests = function () {
 
   it('generates a DID with a seed', async done => {
     try {
-      let did = await generateDidFromSeed(password, '000000000000000000000000Steward1')
-      expect(did).toEqual('did:sov:Th7MpTaRZVRYnPiabds81Y')
+      let { did, verificationKey } = await generateDidFromSeed(password, steward.seed)
+      expect(did).toEqual(steward.did)
+      expect(verificationKey).toEqual(steward.verificationKey)
       done()
     } catch (error) {
       done.fail(error)

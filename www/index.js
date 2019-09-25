@@ -40,7 +40,7 @@ function generateDid (password, success, error) {
 function generateDidFromSeed (password, seed, success, error) {
   return withOpenWallet(password, handle =>
       execPromise(null, null, 'Global121Indy', 'generateDid', [handle, seed]))
-    .then(([did]) => "did:sov:" + did)
+    .then(([did, verificationKey]) => ({ did: "did:sov:" + did, verificationKey }))
     .then(success, error)
 }
 

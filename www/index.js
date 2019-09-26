@@ -1,29 +1,37 @@
-var exec = require('cordova/exec')
+var cordovaExec = require('cordova/exec')
+
+function exec (...args) {
+  return new Promise((resolve, reject) => {
+    cordovaExec(resolve, reject, 'Global121Indy', ...args)
+  })
+}
 
 function setup (success, error) {
-  return execPromise(success, error, 'Global121Indy', 'setup', [])
+  return exec('setup', []).then(success, error)
 }
 
 function createWallet (password, success, error) {
-  return execPromise(success, error, "Global121Indy", "createWallet", [password])
+  return exec('createWallet', [password]).then(success, error)
 }
 
 function createMasterSecret (password, success, error) {
   return withOpenWallet(password, handle =>
-    execPromise(null, null, 'Global121Indy', 'createMasterSecret', [handle]))
+    exec('createMasterSecret', [handle]))
   .then(success, error)
 }
 
 function deleteWallet (password, success, error) {
-  return execPromise(success, error, "Global121Indy", "deleteWallet", [password])
+  return exec('deleteWallet', [password]).then(success, error)
 }
 
 function openWallet (password, success, error) {
-  return execPromise(success, error, 'Global121Indy', 'openWallet', [password])
+  return exec('openWallet', [password])
+  .then(success, error)
 }
 
 function closeWallet (handle, success, error) {
-  return execPromise(success, error, 'Global121Indy', 'closeWallet', [handle])
+  return exec('closeWallet', [handle])
+  .then(success, error)
 }
 
 function withOpenWallet(password, action) {
@@ -39,8 +47,8 @@ function generateDid (password, success, error) {
 
 function generateDidFromSeed (password, seed, success, error) {
   return withOpenWallet(password, handle =>
-      execPromise(null, null, 'Global121Indy', 'generateDid', [handle, seed]))
-    .then(([did, verificationKey]) => ({ did: "did:sov:" + did, verificationKey }))
+      exec('generateDid', [handle, seed]))
+    .then(([did, verificationKey]) => ({ did: 'did:sov:' + did, verificationKey }))
     .then(success, error)
 }
 
@@ -54,8 +62,8 @@ function addTrustAnchor(
 }
 
 function buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey) {
-  return execPromise(null, null, 'Global121Indy', 'buildTrustAnchorRequest',
-                     [raw(submitterDid), raw(anchorDid), anchorVerificationKey])
+  return exec('buildTrustAnchorRequest',
+              [raw(submitterDid), raw(anchorDid), anchorVerificationKey])
 }
 
 function createSchema (password, did, schema, success, error) {
@@ -66,54 +74,39 @@ function createSchema (password, did, schema, success, error) {
 }
 
 function buildSchemaRequest(did, schema) {
-  return execPromise(null, null, 'Global121Indy', 'buildSchemaRequest',
-                     [raw(did), JSON.stringify(schema)])
+  return exec('buildSchemaRequest',
+              [raw(did), JSON.stringify(schema)])
 }
 
 function signAndSubmitRequest(handle, did, request) {
-  return execPromise(null, null, 'Global121Indy', 'signAndSubmitRequest',
-                     [handle, raw(did), request])
-    .then(response => {
-      let json = JSON.parse(response)
-      if (json.result) {
-        return json.result.rootHash
-      } else {
-        throw new Error(json.reason)
-      }
-    })
+  return exec('signAndSubmitRequest', [handle, raw(did), request])
+  .then(response => {
+    let json = JSON.parse(response)
+    if (json.result) {
+      return json.result.rootHash
+    } else {
+      throw new Error(json.reason)
+    }
+  })
 }
 
 function createCredentialDefinition(password, did, schema, tag, success, error) {
   return withOpenWallet(password, handle =>
-    execPromise(
-      null, null, 'Global121Indy', 'createCredentialDefinition',
-      [handle, raw(did), JSON.stringify(schema), tag]
-    ))
+    exec('createCredentialDefinition',
+         [handle, raw(did), JSON.stringify(schema), tag]))
   .then(([id, definition]) => ({ id, definition: JSON.parse(definition) }))
   .then(success, error)
 }
 
 function createCredentialOffer(password, credentialDefinitionId, success, error) {
   return withOpenWallet(password, handle =>
-    execPromise(
-      null, null, 'Global121Indy', 'createCredentialOffer',
-      [handle, credentialDefinitionId]
-    ))
+    exec('createCredentialOffer',
+         [handle, credentialDefinitionId]))
   .then(success, error)
 }
 
 function raw(did) {
-  return did.slice("did:sov:".length)
-}
-
-function execPromise (success, error, ...args) {
-  if (success || error) {
-    exec(success, error, ...args)
-  } else {
-    return new Promise((resolve, reject) => {
-      exec(resolve, reject, ...args)
-    })
-  }
+  return did.slice('did:sov:'.length)
 }
 
 exports.setup = setup

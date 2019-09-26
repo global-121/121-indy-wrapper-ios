@@ -1,36 +1,35 @@
 var cordovaExec = require('cordova/exec')
 
-function exec (...args) {
+function exec (method, ...args) {
   return new Promise((resolve, reject) => {
-    cordovaExec(resolve, reject, 'Global121Indy', ...args)
+    cordovaExec(resolve, reject, 'Global121Indy', method, args)
   })
 }
 
 function setup (success, error) {
-  return exec('setup', []).then(success, error)
+  return exec('setup').then(success, error)
 }
 
 function createWallet (password, success, error) {
-  return exec('createWallet', [password]).then(success, error)
+  return exec('createWallet', password).then(success, error)
 }
 
 function createMasterSecret (password, success, error) {
-  return withOpenWallet(password, handle =>
-    exec('createMasterSecret', [handle]))
+  return withOpenWallet(password, handle => exec('createMasterSecret', handle))
   .then(success, error)
 }
 
 function deleteWallet (password, success, error) {
-  return exec('deleteWallet', [password]).then(success, error)
+  return exec('deleteWallet', password).then(success, error)
 }
 
 function openWallet (password, success, error) {
-  return exec('openWallet', [password])
+  return exec('openWallet', password)
   .then(success, error)
 }
 
 function closeWallet (handle, success, error) {
-  return exec('closeWallet', [handle])
+  return exec('closeWallet', handle)
   .then(success, error)
 }
 
@@ -47,7 +46,7 @@ function generateDid (password, success, error) {
 
 function generateDidFromSeed (password, seed, success, error) {
   return withOpenWallet(password, handle =>
-      exec('generateDid', [handle, seed]))
+      exec('generateDid', handle, seed))
     .then(([did, verificationKey]) => ({ did: 'did:sov:' + did, verificationKey }))
     .then(success, error)
 }
@@ -63,7 +62,7 @@ function addTrustAnchor(
 
 function buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey) {
   return exec('buildTrustAnchorRequest',
-              [raw(submitterDid), raw(anchorDid), anchorVerificationKey])
+              raw(submitterDid), raw(anchorDid), anchorVerificationKey)
 }
 
 function createSchema (password, did, schema, success, error) {
@@ -74,12 +73,11 @@ function createSchema (password, did, schema, success, error) {
 }
 
 function buildSchemaRequest(did, schema) {
-  return exec('buildSchemaRequest',
-              [raw(did), JSON.stringify(schema)])
+  return exec('buildSchemaRequest', raw(did), JSON.stringify(schema))
 }
 
 function signAndSubmitRequest(handle, did, request) {
-  return exec('signAndSubmitRequest', [handle, raw(did), request])
+  return exec('signAndSubmitRequest', handle, raw(did), request)
   .then(response => {
     let json = JSON.parse(response)
     if (json.result) {
@@ -93,15 +91,14 @@ function signAndSubmitRequest(handle, did, request) {
 function createCredentialDefinition(password, did, schema, tag, success, error) {
   return withOpenWallet(password, handle =>
     exec('createCredentialDefinition',
-         [handle, raw(did), JSON.stringify(schema), tag]))
+         handle, raw(did), JSON.stringify(schema), tag))
   .then(([id, definition]) => ({ id, definition: JSON.parse(definition) }))
   .then(success, error)
 }
 
 function createCredentialOffer(password, credentialDefinitionId, success, error) {
   return withOpenWallet(password, handle =>
-    exec('createCredentialOffer',
-         [handle, credentialDefinitionId]))
+    exec('createCredentialOffer', handle, credentialDefinitionId))
   .then(success, error)
 }
 

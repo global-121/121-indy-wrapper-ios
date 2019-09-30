@@ -101,10 +101,16 @@ function getSchema(id, success, error) {
 }
 
 function createCredentialDefinition(password, did, schema, tag, success, error) {
+  var result = {}
   return withOpenWallet(password, handle =>
-    exec('createCredentialDefinition',
-         handle, raw(did), JSON.stringify(schema), tag))
-  .then(([id, definition]) => ({ id, definition: JSON.parse(definition) }))
+    exec('createCredentialDefinition', handle, raw(did), JSON.stringify(schema), tag)
+    .then(([id, json]) => {
+      result.id = id
+      result.json = JSON.parse(json)
+      return exec('buildCredentialDefinitionRequest', raw(did), json)
+    })
+    .then(request => signAndSubmitRequest(handle, did, request)))
+    .then(_ => result)
   .then(success, error)
 }
 

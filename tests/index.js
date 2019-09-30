@@ -172,7 +172,7 @@ exports.defineAutoTests = function () {
         password, anchor.did, schema.json, 'tag'
       )
       expect(credential.id).toBeDefined()
-      expect(credential.definition).toBeDefined()
+      expect(credential.json).toBeDefined()
       done()
     } catch (error) {
       done.fail(error)

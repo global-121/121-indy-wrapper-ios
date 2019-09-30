@@ -19,7 +19,7 @@ exports.defineAutoTests = function () {
     did: 'did:sov:Th7MpTaRZVRYnPiabds81Y',
     verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
   }
-  let schema = {
+  let schemaData = {
     name: 'gvt',
     version: '1.0',
     attributes: '["age", "sex", "height", "name"]'
@@ -127,10 +127,13 @@ exports.defineAutoTests = function () {
     }
   })
 
+  var schema
+
   it('creates a schema', async done => {
     try {
-      let id = await createSchema(password, anchor.did, schema)
-      expect(id).not.toBeNull()
+      schema = await createSchema(password, anchor.did, schemaData)
+      expect(schema.id).not.toBeNull()
+      expect(schema.json).not.toBeNull()
       done()
     } catch (error) {
       done.fail(error)
@@ -140,7 +143,7 @@ exports.defineAutoTests = function () {
   it('fails creating a schema with insufficient privileges', async done => {
     try {
       let unprivileged = await generateDid(password)
-      let id = await createSchema(password, unprivileged.did, schema)
+      let id = await createSchema(password, unprivileged.did, schemaData)
       fail("expected schema creation to fail")
     } catch (error) {
       expect(error).toBeDefined()
@@ -153,7 +156,7 @@ exports.defineAutoTests = function () {
   it('creates a credential definition', async done => {
     try {
       credential = await createCredentialDefinition(
-        password, anchor.did, schema, 'tag'
+        password, anchor.did, schema.json, 'tag'
       )
       expect(credential.id).toBeDefined()
       expect(credential.definition).toBeDefined()

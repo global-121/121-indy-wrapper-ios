@@ -67,15 +67,16 @@ function createSchema (password, did, schema, success, error) {
   let name = schema.name
   let version = schema.version
   let attributes = schema.attributes
-  var schemaId
+  var result = {}
   return withOpenWallet(password, handle =>
     exec('createSchema', raw(did), name, version, attributes)
     .then(([id,json]) => {
-      schemaId = id
+      result.id = id
+      result.json = JSON.parse(json)
       return exec('buildSchemaRequest', raw(did), json)
     })
     .then(request => signAndSubmitRequest(handle, did, request))
-    .then(_ => schemaId))
+    .then(_ => result))
   .then(success, error)
 }
 

@@ -200,7 +200,7 @@ exports.defineAutoTests = function () {
       offer = await createCredentialOffer(password, credential.id)
       expect(offer).toBeDefined()
       done()
-    } catch(error) {
+    } catch (error) {
       done.fail(error)
     }
   })
@@ -213,7 +213,7 @@ exports.defineAutoTests = function () {
       expect(request.json).toBeDefined()
       expect(request.meta).toBeDefined()
       done()
-    } catch(error) {
+    } catch (error) {
       done.fail(error)
     }
   })

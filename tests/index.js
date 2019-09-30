@@ -167,15 +167,15 @@ exports.defineAutoTests = function () {
     }
   })
 
-  var credential
+  var definition
 
   it('creates a credential definition', async done => {
     try {
-      credential = await createCredentialDefinition(
+      definition = await createCredentialDefinition(
         password, anchor.did, schema.json, 'tag'
       )
-      expect(credential.id).toBeDefined()
-      expect(credential.json).toBeDefined()
+      expect(definition.id).toBeDefined()
+      expect(definition.json).toBeDefined()
       done()
     } catch (error) {
       done.fail(error)
@@ -184,10 +184,10 @@ exports.defineAutoTests = function () {
 
   it('retrieves a credential definition', async done => {
     try {
-      let retrieved = await getCredentialDefinition(anchor.did, credential.id)
-      expect(retrieved.id).toEqual(credential.id)
+      let retrieved = await getCredentialDefinition(anchor.did, definition.id)
+      expect(retrieved.id).toEqual(definition.id)
       expect(retrieved.json).toBeDefined()
-      credential = retrieved
+      definition = retrieved
       done()
     } catch (error) {
       done.fail(error)
@@ -198,7 +198,7 @@ exports.defineAutoTests = function () {
 
   it('creates a credential offer', async done => {
     try {
-      offer = await createCredentialOffer(password, credential.id)
+      offer = await createCredentialOffer(password, definition.id)
       expect(offer).toBeDefined()
       done()
     } catch (error) {
@@ -210,7 +210,7 @@ exports.defineAutoTests = function () {
 
   it('creates a credential request', async done => {
     try {
-      request = await createCredentialRequest(password, anchor.did, offer, credential.id)
+      request = await createCredentialRequest(password, anchor.did, offer, definition.id)
       expect(request.json).toBeDefined()
       expect(request.meta).toBeDefined()
       done()

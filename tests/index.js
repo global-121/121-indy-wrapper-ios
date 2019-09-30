@@ -9,6 +9,7 @@ exports.defineAutoTests = function () {
     generateDidFromSeed,
     addTrustAnchor,
     createSchema,
+    getSchema,
     createCredentialDefinition,
     createCredentialOffer
   } = Global121.Indy
@@ -149,6 +150,18 @@ exports.defineAutoTests = function () {
       expect(error).toBeDefined()
     }
     done()
+  })
+
+  it('retrieves a schema', async done => {
+    try {
+      let retrieved = await getSchema(schema.id)
+      expect(retrieved.id).toEqual(schema.id)
+      expect(retrieved.json).not.toBeNull()
+      schema = retrieved
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
   })
 
   var credential

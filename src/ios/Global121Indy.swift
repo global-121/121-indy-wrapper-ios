@@ -196,6 +196,34 @@ let poolName = "pool"
         }
     }
 
+    @objc func buildGetSchemaRequest(_ command: CDVInvokedUrlCommand) {
+        let id = command.arguments[0] as! String
+        IndyLedger.buildGetSchemaRequest(withSubmitterDid: nil, id: id) { error, request in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: request!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func parseGetSchemaResponse(_ command: CDVInvokedUrlCommand) {
+        let response = command.arguments[0] as! String
+        IndyLedger.parseGetSchemaResponse(response) { error, id, json in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: [id!, json!]),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     @objc func signAndSubmitRequest(_ command: CDVInvokedUrlCommand) {
         guard let pool = self.poolHandle else {
             self.send(error: Errors.poolHandleMissing as NSError, for: command)
@@ -240,6 +268,24 @@ let poolName = "pool"
                 self.commandDelegate!.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [id!, json!]),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func submitRequest(_ command: CDVInvokedUrlCommand) {
+        guard let pool = self.poolHandle else {
+            self.send(error: Errors.poolHandleMissing as NSError, for: command)
+            return
+        }
+        let request = command.arguments[0] as! String
+        IndyLedger.submitRequest(request, poolHandle: pool) { error, response in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: response!),
                     callbackId: command.callbackId)
             }
         }

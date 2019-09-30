@@ -64,14 +64,19 @@ function buildTrustAnchorRequest(submitterDid, anchorDid, anchorVerificationKey)
 }
 
 function createSchema (password, did, schema, success, error) {
+  let name = schema.name
+  let version = schema.version
+  let attributes = schema.attributes
+  var schemaId
   return withOpenWallet(password, handle =>
-    buildSchemaRequest(did, schema)
-    .then(request => signAndSubmitRequest(handle, did, request)))
+    exec('createSchema', raw(did), name, version, attributes)
+    .then(([id,json]) => {
+      schemaId = id
+      return exec('buildSchemaRequest', raw(did), json)
+    })
+    .then(request => signAndSubmitRequest(handle, did, request))
+    .then(_ => schemaId))
   .then(success, error)
-}
-
-function buildSchemaRequest(did, schema) {
-  return exec('buildSchemaRequest', raw(did), JSON.stringify(schema))
 }
 
 function signAndSubmitRequest(handle, did, request) {

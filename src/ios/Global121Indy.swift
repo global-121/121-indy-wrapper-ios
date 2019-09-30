@@ -159,6 +159,28 @@ let poolName = "pool"
         }
     }
 
+    @objc func createSchema(_ command: CDVInvokedUrlCommand) {
+        let did = command.arguments[0] as! String
+        let name = command.arguments[1] as! String
+        let version = command.arguments[2] as! String
+        let attributes = command.arguments[3] as! String
+        IndyAnoncreds.issuerCreateSchema(
+            withName: name,
+            version: version,
+            attrs: attributes,
+            issuerDID: did
+        ) { error, id, json in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: [id!, json!]),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     @objc func buildSchemaRequest(_ command: CDVInvokedUrlCommand) {
         let did = command.arguments[0] as! String
         let schema = command.arguments[1] as! String

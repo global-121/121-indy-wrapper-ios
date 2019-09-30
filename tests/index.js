@@ -20,11 +20,9 @@ exports.defineAutoTests = function () {
     verificationKey: 'FYmoFw55GeQH7SRFa37dkx1d2dZ3zUF8ckg7wmL7ofN4'
   }
   let schema = {
-    id: '1',
     name: 'gvt',
     version: '1.0',
-    ver: '1.0',
-    attrNames: ['age', 'sex', 'height', 'name']
+    attributes: '["age", "sex", "height", "name"]'
   }
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000

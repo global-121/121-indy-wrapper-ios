@@ -143,7 +143,7 @@ exports.defineAutoTests = function () {
   it('fails creating a schema with insufficient privileges', async done => {
     try {
       let unprivileged = await generateDid(password)
-      let id = await createSchema(password, unprivileged.did, schemaData)
+      await createSchema(password, unprivileged.did, schemaData)
       fail("expected schema creation to fail")
     } catch (error) {
       expect(error).toBeDefined()

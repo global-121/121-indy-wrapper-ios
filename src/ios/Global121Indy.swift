@@ -478,7 +478,13 @@ func credentials(password: String) -> String {
 }
 
 func result(error: NSError) -> CDVPluginResult {
-    return CDVPluginResult(
-        status: CDVCommandStatus_ERROR,
-        messageAs: "Error code: \(error.code)")
+    if let message = error.userInfo["message"] {
+        return CDVPluginResult(
+            status: CDVCommandStatus_ERROR,
+            messageAs: "Error code: \(error.code), \(message)")
+    } else {
+        return CDVPluginResult(
+            status: CDVCommandStatus_ERROR,
+            messageAs: "Error code: \(error.code)")
+    }
 }

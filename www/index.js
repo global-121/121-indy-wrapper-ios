@@ -114,8 +114,8 @@ function createCredentialDefinition(password, did, schema, tag, success, error) 
   .then(success, error)
 }
 
-function getCredentialDefinition(did, id, success, error) {
-  return exec('buildGetCredentialDefinitionRequest', raw(did), id)
+function getCredentialDefinition(id, success, error) {
+  return exec('buildGetCredentialDefinitionRequest', id)
   .then(request => exec('submitRequest', request))
   .then(response => exec('parseGetCredentialDefinitionResponse', response))
   .then(([id, json]) => ({ id, json: JSON.parse(json) }))
@@ -130,7 +130,7 @@ function createCredentialOffer(password, credentialDefinitionId, success, error)
 
 function createCredentialRequest(password, did, offer, credentialDefinitionId, success, error) {
   return withOpenWallet(password, handle =>
-    getCredentialDefinition(did, credentialDefinitionId)
+    getCredentialDefinition(credentialDefinitionId)
     .then(({ json }) => JSON.stringify(json))
     .then(json => exec('createCredentialRequest', handle, raw(did), offer, json)))
     .then(([json,meta]) => ({ json: JSON.parse(json), meta: JSON.parse(meta) }))

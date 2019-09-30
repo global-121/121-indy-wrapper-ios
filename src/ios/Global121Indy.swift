@@ -289,9 +289,8 @@ let poolName = "pool"
     }
 
     @objc func buildGetCredentialDefinitionRequest(_ command: CDVInvokedUrlCommand) {
-        let did = command.arguments[0] as! String
-        let id = command.arguments[1] as! String
-        IndyLedger.buildGetCredDefRequest(withSubmitterDid: did, id: id) { error, request in
+        let id = command.arguments[0] as! String
+        IndyLedger.buildGetCredDefRequest(withSubmitterDid: nil, id: id) { error, request in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {

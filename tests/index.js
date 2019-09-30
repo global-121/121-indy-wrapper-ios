@@ -185,7 +185,7 @@ exports.defineAutoTests = function () {
 
   it('retrieves a credential definition', async done => {
     try {
-      let retrieved = await getCredentialDefinition(anchor.did, definition.id)
+      let retrieved = await getCredentialDefinition(definition.id)
       expect(retrieved.id).toEqual(definition.id)
       expect(retrieved.json).toBeDefined()
       definition = retrieved

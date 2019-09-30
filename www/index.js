@@ -144,6 +144,18 @@ function createCredential(password, offer, request, values, success, error) {
   .then(success, error)
 }
 
+function storeCredential(password, definition, requestMeta, credential, success, error) {
+  return withOpenWallet(password, handle =>
+     exec(
+       'storeCredential',
+       handle,
+       JSON.stringify(definition),
+       JSON.stringify(requestMeta),
+       JSON.stringify(credential)
+      ))
+  .then(success, error)
+}
+
 function raw(did) {
   return did.slice('did:sov:'.length)
 }
@@ -162,3 +174,4 @@ exports.getCredentialDefinition = getCredentialDefinition
 exports.createCredentialOffer = createCredentialOffer
 exports.createCredentialRequest = createCredentialRequest
 exports.createCredential = createCredential
+exports.storeCredential = storeCredential

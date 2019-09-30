@@ -14,7 +14,8 @@ exports.defineAutoTests = function () {
     getCredentialDefinition,
     createCredentialOffer,
     createCredentialRequest,
-    createCredential
+    createCredential,
+    storeCredential
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -231,6 +232,16 @@ exports.defineAutoTests = function () {
     try {
       credential = await createCredential(password, offer, request.json, values)
       expect(credential).not.toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it("stores a credential", async done => {
+    try {
+      let id = await storeCredential(password, definition.json, request.meta, credential)
+      expect(id).not.toBeNull()
       done()
     } catch (error) {
       done.fail(error)

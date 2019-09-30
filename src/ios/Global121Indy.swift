@@ -288,6 +288,21 @@ let poolName = "pool"
         }
     }
 
+    @objc func buildGetCredentialDefinitionRequest(_ command: CDVInvokedUrlCommand) {
+        let did = command.arguments[0] as! String
+        let id = command.arguments[1] as! String
+        IndyLedger.buildGetCredDefRequest(withSubmitterDid: did, id: id) { error, request in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: request!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     @objc func submitRequest(_ command: CDVInvokedUrlCommand) {
         guard let pool = self.poolHandle else {
             self.send(error: Errors.poolHandleMissing as NSError, for: command)
@@ -301,6 +316,20 @@ let poolName = "pool"
                 self.commandDelegate!.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: response!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func parseGetCredentialDefinitionResponse(_ command: CDVInvokedUrlCommand) {
+        let response = command.arguments[0] as! String
+        IndyLedger.parseGetCredDefResponse(response) { error, id, json in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: [id!, json!]),
                     callbackId: command.callbackId)
             }
         }

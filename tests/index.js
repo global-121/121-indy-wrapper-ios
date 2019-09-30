@@ -11,6 +11,7 @@ exports.defineAutoTests = function () {
     createSchema,
     getSchema,
     createCredentialDefinition,
+    getCredentialDefinition,
     createCredentialOffer
   } = Global121.Indy
 
@@ -173,6 +174,18 @@ exports.defineAutoTests = function () {
       )
       expect(credential.id).toBeDefined()
       expect(credential.json).toBeDefined()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it('retrieves a credential definition', async done => {
+    try {
+      let retrieved = await getCredentialDefinition(anchor.did, credential.id)
+      expect(retrieved.id).toEqual(credential.id)
+      expect(retrieved.json).toBeDefined()
+      credential = retrieved
       done()
     } catch (error) {
       done.fail(error)

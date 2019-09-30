@@ -24,13 +24,11 @@ function deleteWallet (password, success, error) {
 }
 
 function openWallet (password, success, error) {
-  return exec('openWallet', password)
-  .then(success, error)
+  return exec('openWallet', password).then(success, error)
 }
 
 function closeWallet (handle, success, error) {
-  return exec('closeWallet', handle)
-  .then(success, error)
+  return exec('closeWallet', handle).then(success, error)
 }
 
 function withOpenWallet(password, action) {

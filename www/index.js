@@ -156,6 +156,69 @@ function storeCredential(password, definition, requestMeta, credential, success,
   .then(success, error)
 }
 
+function createProof(password, proofRequest, success, error) {
+  return withOpenWallet(password, handle =>
+    getPrerequisitesForProofRequest(handle, proofRequest)
+    .then(({credentials, schemas, definitions}) =>
+      exec(
+        'createProof',
+        handle,
+        JSON.stringify(proofRequest),
+        JSON.stringify(credentials),
+        JSON.stringify(schemas),
+        JSON.stringify(definitions)
+      )
+    ))
+    .then(proof => JSON.parse(proof))
+  .then(success, error)
+}
+
+async function getPrerequisitesForProofRequest(handle, proofRequest) {
+  let { attrs: attributes, predicates } =
+    await getCredentialsForProofRequest(handle, proofRequest)
+
+  let credentials = {
+    self_attested_attributes: {},
+    requested_attributes: {},
+    requested_predicates: {}
+  }
+  let schemas = {}
+  let definitions = {}
+
+  for (name in proofRequest.requested_attributes) {
+    let options = attributes[name][0]
+    if (!options) {
+      continue
+    }
+    let credential = options.cred_info
+    credentials.requested_attributes[name] = { cred_id: credential.referent, revealed: true }
+    let schemaId = credential.schema_id
+    let definitionId = credential.cred_def_id
+    schemas[schemaId] = (await getSchema(schemaId)).json
+    definitions[definitionId] = (await getCredentialDefinition(definitionId)).json
+  }
+
+  for (name in proofRequest.requested_predicates) {
+    let options = predicates[name][0]
+    if (!options) {
+      continue
+    }
+    let credential = options.cred_info
+    credentials.requested_predicates[name] = { cred_id: credential.referent }
+    let schemaId = credential.schema_id
+    let definitionId = credential.cred_def_id
+    schemas[schemaId] = (await getSchema(schemaId)).json
+    definitions[definitionId] = (await getCredentialDefinition(definitionId)).json
+  }
+
+  return { credentials, schemas, definitions }
+}
+
+function getCredentialsForProofRequest(handle, proofRequest) {
+  return exec('getCredentialsForProofRequest', handle, JSON.stringify(proofRequest))
+  .then(json => JSON.parse(json))
+}
+
 function raw(did) {
   return did.slice('did:sov:'.length)
 }
@@ -175,3 +238,4 @@ exports.createCredentialOffer = createCredentialOffer
 exports.createCredentialRequest = createCredentialRequest
 exports.createCredential = createCredential
 exports.storeCredential = storeCredential
+exports.createProof = createProof

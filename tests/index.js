@@ -15,7 +15,8 @@ exports.defineAutoTests = function () {
     createCredentialOffer,
     createCredentialRequest,
     createCredential,
-    storeCredential
+    storeCredential,
+    createProof
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -242,6 +243,39 @@ exports.defineAutoTests = function () {
     try {
       let id = await storeCredential(password, definition.json, request.meta, credential)
       expect(id).not.toBeNull()
+      done()
+    } catch (error) {
+      done.fail(error)
+    }
+  })
+
+  it("creates a proof", async done => {
+    let proofRequest = {
+      nonce: '123432421212',
+      name: 'proof_req_1',
+      version: '0.1',
+      requested_attributes: {
+          attr1_referent: {
+              name: 'name',
+              restrictions: {
+                  cred_def_id: definition.id,
+              }
+          }
+      },
+      requested_predicates: {
+          predicate1_referent: {
+              name: 'age',
+              p_type: '>=',
+              p_value: 18,
+              restrictions: {
+                cred_def_id: definition.id,
+              }
+          }
+      }
+    }
+    try {
+      let proof = await createProof(password, proofRequest)
+      expect(proof).not.toBeNull()
       done()
     } catch (error) {
       done.fail(error)

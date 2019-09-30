@@ -424,6 +424,50 @@ let poolName = "pool"
         }
     }
 
+    @objc func getCredentialsForProofRequest(_ command: CDVInvokedUrlCommand) {
+        let wallet = command.arguments[0] as! IndyHandle
+        let proofRequest = command.arguments[1] as! String
+        IndyAnoncreds.proverGetCredentials(
+            forProofReq: proofRequest,
+            walletHandle: wallet
+        ) { error, json in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: json!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
+    @objc func createProof(_ command: CDVInvokedUrlCommand) {
+        let wallet = command.arguments[0] as! IndyHandle
+        let proofRequest = command.arguments[1] as! String
+        let requestedCredentials = command.arguments[2] as! String
+        let schemas = command.arguments[3] as! String
+        let credentialDefinitions = command.arguments[4] as! String
+        IndyAnoncreds.proverCreateProof(
+            forRequest: proofRequest,
+            requestedCredentialsJSON: requestedCredentials,
+            masterSecretID: "secret",
+            schemasJSON: schemas,
+            credentialDefsJSON: credentialDefinitions,
+            revocStatesJSON: "{}",
+            walletHandle: wallet
+        ) { error, proof in
+            if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
+                self.send(error: error as NSError, for: command)
+            } else {
+                self.commandDelegate!.send(
+                    CDVPluginResult(status: CDVCommandStatus_OK,
+                                    messageAs: proof!),
+                    callbackId: command.callbackId)
+            }
+        }
+    }
+
     private func setProtocolVersion(completion: @escaping (Error?)->Void) {
         IndyPool.setProtocolVersion(2) { error in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {

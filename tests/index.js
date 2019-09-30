@@ -12,7 +12,8 @@ exports.defineAutoTests = function () {
     getSchema,
     createCredentialDefinition,
     getCredentialDefinition,
-    createCredentialOffer
+    createCredentialOffer,
+    createCredentialRequest
   } = Global121.Indy
 
   let password = "shh, secret!"
@@ -192,13 +193,28 @@ exports.defineAutoTests = function () {
     }
   })
 
+  var offer
+
   it('creates a credential offer', async done => {
     try {
-      let offer = await createCredentialOffer(password, credential.id)
+      offer = await createCredentialOffer(password, credential.id)
       expect(offer).toBeDefined()
       done()
     } catch(error) {
-      done.fail()
+      done.fail(error)
+    }
+  })
+
+  var request
+
+  it('creates a credential request', async done => {
+    try {
+      request = await createCredentialRequest(password, anchor.did, offer, credential.id)
+      expect(request.json).toBeDefined()
+      expect(request.meta).toBeDefined()
+      done()
+    } catch(error) {
+      done.fail(error)
     }
   })
 

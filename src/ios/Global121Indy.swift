@@ -60,23 +60,26 @@ let poolName = "pool"
     }
 
     @objc func createWallet(_ command: CDVInvokedUrlCommand) {
-        let password = command.arguments[0] as! String
+        guard let password = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         self.createWallet(password: password) { error in
             if let error = error as NSError? {
-                self.send(error: error, for: command)
-                return
+                return self.send(error: error, for: command)
             }
             self.sendOk(for: command)
         }
     }
 
     @objc func createMasterSecret(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
+        guard let wallet = command.arguments[0] as? IndyHandle else {
+            return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.proverCreateMasterSecret("secret", walletHandle: wallet) { error, id in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: id!),
                     callbackId: command.callbackId)
@@ -85,7 +88,9 @@ let poolName = "pool"
     }
 
     @objc func deleteWallet(_ command: CDVInvokedUrlCommand) {
-        let password = command.arguments[0] as! String
+        guard let password = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         self.deleteWallet(password: password) { error in
             if let error = error as NSError? {
                 self.send(error: error, for: command)
@@ -96,7 +101,9 @@ let poolName = "pool"
     }
 
     @objc func openWallet(_ command: CDVInvokedUrlCommand) {
-        let password = command.arguments[0] as! String
+        guard let password = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         self.openWallet(password: password) { handle, error in
             if let e = error as NSError? {
                 self.send(error: e, for: command)
@@ -111,7 +118,9 @@ let poolName = "pool"
     }
 
     @objc func closeWallet(_ command: CDVInvokedUrlCommand) {
-        let handle = command.arguments[0] as! IndyHandle
+        guard let handle = command.arguments[0] as? IndyHandle else {
+            return sendInvalidArgument(for: command)
+        }
         IndyWallet.sharedInstance().close(withHandle: handle) { error in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
@@ -122,14 +131,16 @@ let poolName = "pool"
     }
 
     @objc func generateDid(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
+        guard let wallet = command.arguments[0] as? IndyHandle else {
+            return sendInvalidArgument(for: command)
+        }
         let seed = command.arguments[1] as? String
         let json = seed == nil ? "{}" : "{ \"seed\": \"\(seed!)\" }"
         IndyDid.createAndStoreMyDid(json, walletHandle: wallet) { error, did, verificationKey in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [did!, verificationKey!]),
                     callbackId: command.callbackId)
@@ -138,9 +149,12 @@ let poolName = "pool"
     }
 
     @objc func buildTrustAnchorRequest(_ command: CDVInvokedUrlCommand) {
-        let submitterDid = command.arguments[0] as! String
-        let anchorDid = command.arguments[1] as! String
-        let anchorVerificationKey = command.arguments[2] as! String
+        guard let submitterDid = command.arguments[0] as? String,
+            let anchorDid = command.arguments[1] as? String,
+            let anchorVerificationKey = command.arguments[2] as? String else {
+               return sendInvalidArgument(for: command)
+        }
+
         IndyLedger.buildNymRequest(
             withSubmitterDid: submitterDid,
             targetDID: anchorDid,
@@ -151,7 +165,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: request),
                     callbackId: command.callbackId)
@@ -160,10 +174,12 @@ let poolName = "pool"
     }
 
     @objc func createSchema(_ command: CDVInvokedUrlCommand) {
-        let did = command.arguments[0] as! String
-        let name = command.arguments[1] as! String
-        let version = command.arguments[2] as! String
-        let attributes = command.arguments[3] as! String
+        guard let did = command.arguments[0] as? String,
+            let name = command.arguments[1] as? String,
+            let version = command.arguments[2] as? String,
+            let attributes = command.arguments[3] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.issuerCreateSchema(
             withName: name,
             version: version,
@@ -173,7 +189,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [id!, json!]),
                     callbackId: command.callbackId)
@@ -182,13 +198,15 @@ let poolName = "pool"
     }
 
     @objc func buildSchemaRequest(_ command: CDVInvokedUrlCommand) {
-        let did = command.arguments[0] as! String
-        let schema = command.arguments[1] as! String
+        guard let did = command.arguments[0] as? String,
+            let schema = command.arguments[1] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyLedger.buildSchemaRequest(withSubmitterDid: did, data: schema) { error, request in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: request),
                     callbackId: command.callbackId)
@@ -197,12 +215,14 @@ let poolName = "pool"
     }
 
     @objc func buildGetSchemaRequest(_ command: CDVInvokedUrlCommand) {
-        let id = command.arguments[0] as! String
+        guard let id = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyLedger.buildGetSchemaRequest(withSubmitterDid: nil, id: id) { error, request in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: request!),
                     callbackId: command.callbackId)
@@ -211,12 +231,14 @@ let poolName = "pool"
     }
 
     @objc func parseGetSchemaResponse(_ command: CDVInvokedUrlCommand) {
-        let response = command.arguments[0] as! String
+        guard let response = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyLedger.parseGetSchemaResponse(response) { error, id, json in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [id!, json!]),
                     callbackId: command.callbackId)
@@ -226,12 +248,14 @@ let poolName = "pool"
 
     @objc func signAndSubmitRequest(_ command: CDVInvokedUrlCommand) {
         guard let pool = self.poolHandle else {
-            self.send(error: Errors.poolHandleMissing as NSError, for: command)
+            self.send(error: Global121Error.poolHandleMissing, for: command)
             return
         }
-        let wallet = command.arguments[0] as! IndyHandle
-        let did = command.arguments[1] as! String
-        let request = command.arguments[2] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let did = command.arguments[1] as? String,
+            let request = command.arguments[2] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyLedger.signAndSubmitRequest(
             request,
             submitterDID: did,
@@ -241,7 +265,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: response),
                     callbackId: command.callbackId)
@@ -250,10 +274,12 @@ let poolName = "pool"
     }
 
     @objc func createCredentialDefinition(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let did = command.arguments[1] as! String
-        let schema = command.arguments[2] as! String
-        let tag = command.arguments[3] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let did = command.arguments[1] as? String,
+            let schema = command.arguments[2] as? String,
+            let tag = command.arguments[3] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.issuerCreateAndStoreCredentialDef(
             forSchema: schema,
             issuerDID: did,
@@ -265,7 +291,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [id!, json!]),
                     callbackId: command.callbackId)
@@ -274,13 +300,15 @@ let poolName = "pool"
     }
 
     @objc func buildCredentialDefinitionRequest(_ command: CDVInvokedUrlCommand) {
-        let did = command.arguments[0] as! String
-        let definition = command.arguments[1] as! String
+        guard let did = command.arguments[0] as? String,
+            let definition = command.arguments[1] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyLedger.buildCredDefRequest(withSubmitterDid: did, data: definition) { error, request in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: request!),
                     callbackId: command.callbackId)
@@ -289,12 +317,14 @@ let poolName = "pool"
     }
 
     @objc func buildGetCredentialDefinitionRequest(_ command: CDVInvokedUrlCommand) {
-        let id = command.arguments[0] as! String
+        guard let id = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyLedger.buildGetCredDefRequest(withSubmitterDid: nil, id: id) { error, request in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: request!),
                     callbackId: command.callbackId)
@@ -304,15 +334,17 @@ let poolName = "pool"
 
     @objc func submitRequest(_ command: CDVInvokedUrlCommand) {
         guard let pool = self.poolHandle else {
-            self.send(error: Errors.poolHandleMissing as NSError, for: command)
+            self.send(error: Global121Error.poolHandleMissing, for: command)
             return
         }
-        let request = command.arguments[0] as! String
+        guard let request = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyLedger.submitRequest(request, poolHandle: pool) { error, response in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: response!),
                     callbackId: command.callbackId)
@@ -321,12 +353,14 @@ let poolName = "pool"
     }
 
     @objc func parseGetCredentialDefinitionResponse(_ command: CDVInvokedUrlCommand) {
-        let response = command.arguments[0] as! String
+        guard let response = command.arguments[0] as? String else {
+            return sendInvalidArgument(for: command)
+        }
         IndyLedger.parseGetCredDefResponse(response) { error, id, json in
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [id!, json!]),
                     callbackId: command.callbackId)
@@ -335,8 +369,10 @@ let poolName = "pool"
     }
 
     @objc func createCredentialOffer(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let credentialDefinitionId = command.arguments[1] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let credentialDefinitionId = command.arguments[1] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.issuerCreateCredentialOffer(
             forCredDefId: credentialDefinitionId,
             walletHandle: wallet
@@ -344,7 +380,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: offer),
                     callbackId: command.callbackId)
@@ -353,10 +389,12 @@ let poolName = "pool"
     }
 
     @objc func createCredentialRequest(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let did = command.arguments[1] as! String
-        let offer = command.arguments[2] as! String
-        let definition = command.arguments[3] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let did = command.arguments[1] as? String,
+            let offer = command.arguments[2] as? String,
+            let definition = command.arguments[3] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.proverCreateCredentialReq(
             forCredentialOffer: offer,
             credentialDefJSON: definition,
@@ -367,7 +405,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: [json!, meta!]),
                     callbackId: command.callbackId)
@@ -377,10 +415,12 @@ let poolName = "pool"
     }
 
     @objc func createCredential(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let offer = command.arguments[1] as! String
-        let request = command.arguments[2] as! String
-        let values = command.arguments[3] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let offer = command.arguments[1] as? String,
+            let request = command.arguments[2] as? String,
+            let values = command.arguments[3] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.issuerCreateCredential(
             forCredentialRequest: request,
             credOfferJSON: offer,
@@ -392,7 +432,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: json!),
                     callbackId: command.callbackId)
@@ -401,10 +441,12 @@ let poolName = "pool"
     }
 
     @objc func storeCredential(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let definition = command.arguments[1] as! String
-        let requestMeta = command.arguments[2] as! String
-        let credential = command.arguments[3] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let definition = command.arguments[1] as? String,
+            let requestMeta = command.arguments[2] as? String,
+            let credential = command.arguments[3] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.proverStoreCredential(
             credential,
             credID: nil,
@@ -416,7 +458,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: id!),
                     callbackId: command.callbackId)
@@ -425,8 +467,10 @@ let poolName = "pool"
     }
 
     @objc func getCredentialsForProofRequest(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let proofRequest = command.arguments[1] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let proofRequest = command.arguments[1] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.proverGetCredentials(
             forProofReq: proofRequest,
             walletHandle: wallet
@@ -434,7 +478,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: json!),
                     callbackId: command.callbackId)
@@ -443,11 +487,13 @@ let poolName = "pool"
     }
 
     @objc func createProof(_ command: CDVInvokedUrlCommand) {
-        let wallet = command.arguments[0] as! IndyHandle
-        let proofRequest = command.arguments[1] as! String
-        let requestedCredentials = command.arguments[2] as! String
-        let schemas = command.arguments[3] as! String
-        let credentialDefinitions = command.arguments[4] as! String
+        guard let wallet = command.arguments[0] as? IndyHandle,
+            let proofRequest = command.arguments[1] as? String,
+            let requestedCredentials = command.arguments[2] as? String,
+            let schemas = command.arguments[3] as? String,
+            let credentialDefinitions = command.arguments[4] as? String else {
+                return sendInvalidArgument(for: command)
+        }
         IndyAnoncreds.proverCreateProof(
             forRequest: proofRequest,
             requestedCredentialsJSON: requestedCredentials,
@@ -460,7 +506,7 @@ let poolName = "pool"
             if let error = error as NSError?, error.code != IndyErrorCode.Success.rawValue {
                 self.send(error: error as NSError, for: command)
             } else {
-                self.commandDelegate!.send(
+                self.commandDelegate?.send(
                     CDVPluginResult(status: CDVCommandStatus_OK,
                                     messageAs: proof!),
                     callbackId: command.callbackId)
@@ -546,26 +592,41 @@ let poolName = "pool"
     }
 
     private func sendOk(for command: CDVInvokedUrlCommand) {
-        self.commandDelegate!.send(CDVPluginResult(status: CDVCommandStatus_OK),
+        self.commandDelegate?.send(CDVPluginResult(status: CDVCommandStatus_OK),
                                    callbackId: command.callbackId)
 
     }
 
     private func send(error: NSError, for command: CDVInvokedUrlCommand) {
-        self.commandDelegate!.send(result(error: error),
+        self.commandDelegate?.send(result(error: error),
                                    callbackId: command.callbackId)
 
     }
+
+    private func send(error: Global121Error, for command: CDVInvokedUrlCommand) {
+        self.commandDelegate?.send(result(error: error),
+                                   callbackId: command.callbackId)
+
+    }
+
+    private func sendInvalidArgument(for command: CDVInvokedUrlCommand) {
+        send(error: Global121Error.invalidArgument, for: command)
+    }
 }
 
-enum Errors: String, Error {
+enum Global121Error: String, Error {
     case poolHandleMissing = "Ledger was not opened, did you call setup?"
+    case invalidArgument = "Missing or invalid argument(s)"
 }
 
 func credentials(password: String) -> String {
     let credentials = ["key": password]
     let credentialsJSONdata = try! JSONSerialization.data(withJSONObject: credentials)
     return String(data: credentialsJSONdata, encoding: .utf8)!
+}
+
+func result(error: Global121Error) -> CDVPluginResult {
+    return CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.rawValue)
 }
 
 func result(error: NSError) -> CDVPluginResult {

@@ -31,6 +31,7 @@ exports.defineAutoTests = function () {
     attributes: '["age", "sex", "height", "name"]'
   }
 
+  // creating a credential definition can take a long time
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000
 
   setupTest = async done => {
@@ -44,6 +45,9 @@ exports.defineAutoTests = function () {
   }
 
   it('performs setup', setupTest)
+
+  // tests are not independent from each other,
+  // this test relies on the setup having been done in the previous test
   it('can perform setup more than once', setupTest)
 
   it('can create a wallet', async done => {

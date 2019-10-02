@@ -52,7 +52,7 @@ exports.defineAutoTests = function () {
 
   it('can create a wallet', async done => {
     try {
-      let result = await createWallet(password)
+      let result = await createWallet({ password })
       expect(result).toBeNull()
       done()
     } catch (error) {
@@ -62,7 +62,7 @@ exports.defineAutoTests = function () {
 
   it('throws when wallet was already created', async done => {
     try {
-      await createWallet(password)
+      await createWallet({ password })
       fail("expected wallet creation to fail")
     } catch (error) {
       expect(error).toBeDefined()
@@ -72,7 +72,7 @@ exports.defineAutoTests = function () {
 
   it('can create a master secret for zero knowledge proofs', async done => {
     try {
-      let result = await createMasterSecret(password)
+      let result = await createMasterSecret({ password })
       expect(result).not.toBeNull()
       done()
     } catch (error) {
@@ -82,7 +82,7 @@ exports.defineAutoTests = function () {
 
   it('fails creating a master secret when password is incorrect', async done => {
     try {
-      await createMasterSecret('wrong password')
+      await createMasterSecret({ password: 'wrong password' })
       fail("expected master secret creation to fail")
     } catch (error) {
       expect(error).toBeDefined()
@@ -92,7 +92,7 @@ exports.defineAutoTests = function () {
 
   it('generates a DID', async done => {
     try {
-      let { did, verificationKey } = await generateDid(password)
+      let { did, verificationKey } = await generateDid({ password })
       expect(did).toContain('did:sov:')
       expect(verificationKey).toBeDefined()
       done()
@@ -103,7 +103,8 @@ exports.defineAutoTests = function () {
 
   it('generates a DID with a seed', async done => {
     try {
-      let { did, verificationKey } = await generateDidFromSeed(password, steward.seed)
+      let { did, verificationKey } =
+        await generateDidFromSeed({ password, seed: steward.seed })
       expect(did).toEqual(steward.did)
       expect(verificationKey).toEqual(steward.verificationKey)
       done()
@@ -114,7 +115,7 @@ exports.defineAutoTests = function () {
 
   it('fails generating a DID when password is incorrect', async done => {
     try {
-      await generateDid("wrong password")
+      await generateDid({ password: "wrong password" })
       fail("expected DID generation to fail")
     } catch (error) {
       expect(error).toBeDefined()
@@ -126,10 +127,13 @@ exports.defineAutoTests = function () {
 
   it('adds a trust anchor to the ledger', async done => {
     try {
-      anchor = await generateDid(password)
-      let response = await addTrustAnchor(
-        password, steward.did, anchor.did, anchor.verificationKey
-      )
+      anchor = await generateDid({ password })
+      let response = await addTrustAnchor({
+        password,
+        submitterDid: steward.did,
+        anchorDid: anchor.did,
+        anchorVerificationKey: anchor.verificationKey
+      })
       expect(response).toBeDefined()
       done()
     } catch (error) {
@@ -141,7 +145,11 @@ exports.defineAutoTests = function () {
 
   it('creates a schema', async done => {
     try {
-      schema = await createSchema(password, anchor.did, schemaData)
+      schema = await createSchema({
+        password,
+        did: anchor.did,
+        schema: schemaData
+      })
       expect(schema.id).not.toBeNull()
       expect(schema.json).not.toBeNull()
       done()
@@ -153,7 +161,11 @@ exports.defineAutoTests = function () {
   it('fails creating a schema with insufficient privileges', async done => {
     try {
       let unprivileged = await generateDid(password)
-      await createSchema(password, unprivileged.did, schemaData)
+      await createSchema({
+        password,
+        did: unprivileged.did,
+        schema: schemaData
+      })
       fail("expected schema creation to fail")
     } catch (error) {
       expect(error).toBeDefined()
@@ -163,7 +175,7 @@ exports.defineAutoTests = function () {
 
   it('retrieves a schema', async done => {
     try {
-      let retrieved = await getSchema(schema.id)
+      let retrieved = await getSchema({ id: schema.id })
       expect(retrieved.id).toEqual(schema.id)
       expect(retrieved.json).not.toBeNull()
       schema = retrieved
@@ -177,9 +189,9 @@ exports.defineAutoTests = function () {
 
   it('creates a credential definition', async done => {
     try {
-      definition = await createCredentialDefinition(
-        password, anchor.did, schema.json, 'tag'
-      )
+      definition = await createCredentialDefinition({
+        password, did: anchor.did, schema: schema.json, tag: 'tag'
+      })
       expect(definition.id).toBeDefined()
       expect(definition.json).toBeDefined()
       done()
@@ -190,7 +202,7 @@ exports.defineAutoTests = function () {
 
   it('retrieves a credential definition', async done => {
     try {
-      let retrieved = await getCredentialDefinition(definition.id)
+      let retrieved = await getCredentialDefinition({ id: definition.id })
       expect(retrieved.id).toEqual(definition.id)
       expect(retrieved.json).toBeDefined()
       definition = retrieved
@@ -204,7 +216,10 @@ exports.defineAutoTests = function () {
 
   it('creates a credential offer', async done => {
     try {
-      offer = await createCredentialOffer(password, definition.id)
+      offer = await createCredentialOffer({
+        password,
+        credentialDefinitionId: definition.id
+      })
       expect(offer).toBeDefined()
       done()
     } catch (error) {
@@ -216,7 +231,12 @@ exports.defineAutoTests = function () {
 
   it('creates a credential request', async done => {
     try {
-      request = await createCredentialRequest(password, anchor.did, offer, definition.id)
+      request = await createCredentialRequest({
+        password,
+        did: anchor.did,
+        offer,
+        credentialDefinitionId: definition.id
+      })
       expect(request.json).toBeDefined()
       expect(request.meta).toBeDefined()
       done()
@@ -235,7 +255,12 @@ exports.defineAutoTests = function () {
       age: {raw: "28", encoded: "28"}
     }
     try {
-      credential = await createCredential(password, offer, request.json, values)
+      credential = await createCredential({
+        password,
+        offer,
+        request: request.json,
+        values
+      })
       expect(credential).not.toBeNull()
       done()
     } catch (error) {
@@ -245,7 +270,12 @@ exports.defineAutoTests = function () {
 
   it("stores a credential", async done => {
     try {
-      let id = await storeCredential(password, definition.json, request.meta, credential)
+      let id = await storeCredential({
+        password,
+        definition: definition.json,
+        requestMeta: request.meta,
+        credential
+      })
       expect(id).not.toBeNull()
       done()
     } catch (error) {
@@ -278,7 +308,7 @@ exports.defineAutoTests = function () {
       }
     }
     try {
-      let proof = await createProof(password, proofRequest)
+      let proof = await createProof({ password, proofRequest })
       expect(proof).not.toBeNull()
       done()
     } catch (error) {
@@ -288,7 +318,7 @@ exports.defineAutoTests = function () {
 
   it('can delete a wallet', async done => {
     try {
-      let result = await deleteWallet(password)
+      let result = await deleteWallet({ password })
       expect(result).toBeNull()
       done()
     } catch (error) {

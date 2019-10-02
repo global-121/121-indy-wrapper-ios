@@ -30,42 +30,43 @@ await setup()
 Create the wallet. This needs to be called only once:
 
 ```javascript
-await createWallet(password)
+let password = 'shh, secret!'
+await createWallet({ password })
 ```
 
 Create a master secret (needed for zero knowledge proofs).
 Like most API calls this requires the wallet password.
 
 ```javascript
-await createMasterSecret(password)
+await createMasterSecret({ password })
 ```
 
 Generate a new DID (Decentralized Identity):
 
 ```javascript
-let { did, verificationKey } = await generateDid(password)
+let { did, verificationKey } = await generateDid({ password })
 ```
 
 Create a credential request:
 
 ```javascript
-let { json, meta } = createCredentialRequest(
+let { json, meta } = createCredentialRequest({
   password, did, credentialOffer, credentialDefinitionId
-)
+})
 ```
 
 Store a credential:
 
 ```javascript
-let id = await storeCredential(
-  password, credentialDefinitionJson, credentialRequestMeta, credential
-)
+let id = await storeCredential({
+  password, definition, requestMeta, credential
+})
 ```
 
 Create a proof:
 
 ```javascript
-let proof = await createProof(password, proofRequest)
+let proof = await createProof({ password, proofRequest })
 ```
 
 ### Asynchronous calls

@@ -50,7 +50,7 @@ let { did, verificationKey } = await generateDid({ password })
 Create a credential request:
 
 ```javascript
-let { json, meta } = createCredentialRequest({
+let { json, meta } = await createCredentialRequest({
   password, did, credentialOffer, credentialDefinitionId
 })
 ```

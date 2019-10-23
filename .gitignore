@@ -1,2 +1,8 @@
+
+# External Dependencies
 node_modules
+
+# IDE settings etc
+.vscode
+.idea
 xcuserdata

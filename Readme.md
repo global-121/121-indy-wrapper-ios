@@ -1,18 +1,24 @@
-121 Indy Wrapper
-----------------
+Cordova plugin 121 Indy
+=======================
 
-A [Cordova][1] plugin that wraps [Hyperledger Indy][2] functionality for the
-[Red Cross 121 project][3].
+A [Cordova](https://cordova.apache.org) plugin that wraps [Hyperledger Indy](https://www.hyperledger.org/projects/hyperledger-indy) functionality.
 
-### Installation
+Currently supported platforms:
+* iOS (13+)
+
+
+## Installation
 
 Add the plugin to your Cordova project:
 
 ```bash
-cordova plugin add https://github.com/global-121/121-indy-wrapper-ios.git
+cordova plugin add https://github.com/global-121/121-indy-wrapper-ios.git#0.1.0
 ```
 
-### Usage
+Where `#1.0.0` can be replaced by the specific release version.
+
+
+## Usage
 
 All API functions are available on the `Global121.Indy` object. For instance,
 the `setup` function can be referenced as follows:
@@ -69,6 +75,7 @@ Create a proof:
 let proof = await createProof({ password, proofRequest })
 ```
 
+
 ### Asynchronous calls
 
 The API calls are all asynchronous, and they support both callbacks and
@@ -82,11 +89,7 @@ setup(
 )
 ```
 
-### Testing
 
-Please refer to the [Testing App][4] for running the plugin tests
+## Testing
 
-[1]: https://cordova.apache.org
-[2]: https://www.hyperledger.org/projects/hyperledger-indy
-[3]: https://www.121.global
-[4]: https://github.com/global-121/121-indy-wrapper-ios-testapp
+See the [iOS Test-App](https://github.com/global-121/121-indy-wrapper-ios-testapp) for running the plugin tests on iOS.

@@ -9,7 +9,8 @@
   "files": [
     "plugin.xml",
     "src",
-    "www"
+    "www",
+    "vendor"
   ],
   "cordova": {
     "id": "cordova-plugin-global-121-indy",

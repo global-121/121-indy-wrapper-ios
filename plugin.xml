@@ -3,7 +3,7 @@
         id="cordova-plugin-global-121-indy"
         version="0.1.0"
 >
-  <name>cordova-plugin-121-Indy</name>
+  <name>cordova-plugin-global-121-indy</name>
 
   <engines>
     <engine name="cordova" version=">=9.0.0"/>

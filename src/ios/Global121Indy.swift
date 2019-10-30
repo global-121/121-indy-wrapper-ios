@@ -11,7 +11,7 @@ let poolName = "pool"
     var setupDone = false
     var poolHandle: IndyHandle?
 
-    lazy var poolConfigJSON = PoolConfig.local
+    lazy var poolConfigJSON = PoolConfig.test121
 
     var _walletConfigJSON: String?
     var walletConfigJSON: String? {

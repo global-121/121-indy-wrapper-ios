@@ -1,5 +1,6 @@
 struct PoolConfig {
     static let local = readConfig("docker_pool_transactions_genesis")
+    static let test121 = readConfig("121_pool_transactions_genesis")
     static let sovrinSandbox = readConfig("sovrin_pool_transactions_sandbox_genesis")
 }
 

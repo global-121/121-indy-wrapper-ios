@@ -1,11 +1,16 @@
 {
   "name": "cordova-plugin-global-121-indy",
   "version": "0.1.0",
+  "author": "121.global",
+  "homepage": "https://www.121.global/",
+  "license": "MIT",
   "description": "Cordova plugin for accessing Hyperledger Indy",
+  "repository": {},
   "files": [
     "plugin.xml",
     "src",
-    "www"
+    "www",
+    "vendor"
   ],
   "cordova": {
     "id": "cordova-plugin-global-121-indy",
@@ -13,12 +18,6 @@
       "ios"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/global-121/121-indy-wrapper-ios.git"
-  },
-  "author": "Global 121",
-  "license": "MIT",
   "devDependencies": {
     "plugman": "^3.0.1"
   }

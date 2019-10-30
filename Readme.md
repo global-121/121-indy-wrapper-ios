@@ -12,10 +12,10 @@ Currently supported platforms:
 Add the plugin to your Cordova project:
 
 ```bash
-cordova plugin add https://github.com/global-121/121-indy-wrapper-ios.git#0.1.0
+cordova plugin add https://github.com/global-121/121-indy-wrapper-ios.git#0.2.0
 ```
 
-Where `#1.0.0` can be replaced by the specific release version.
+Where `#0.2.0` can be replaced by a specific [tag/release version](https://github.com/global-121/121-indy-wrapper-ios/releases).
 
 
 ## Usage

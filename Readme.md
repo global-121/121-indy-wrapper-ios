@@ -93,3 +93,9 @@ setup(
 ## Testing
 
 See the [iOS Test-App](https://github.com/global-121/121-indy-wrapper-ios-testapp) for running the plugin tests on iOS.
+
+---
+
+## License
+
+Released under the Apache 2.0 License. See [LICENSE](LICENSE).
